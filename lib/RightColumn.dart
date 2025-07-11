@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'ProjectsWindow.dart';
+
 class RightColumn extends StatelessWidget {
   const RightColumn({
     super.key,
@@ -22,28 +24,7 @@ class RightColumn extends StatelessWidget {
                 child: Text('Projects'),
               ),
             ),
-            Expanded(
-              flex: 4,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: Container(
-                      color: Colors.pink,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: Colors.yellow,
-                      child: Text('Filters'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ProjectsWindow(),
           ],
         ),
       ),
