@@ -25,7 +25,6 @@ class _ScannedFoldersState extends State<ScannedFolders> {
     return Flexible(
       fit: FlexFit.loose,
       child: Container(
-        color: Colors.blue,
         height: 400,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,7 +43,7 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                   final folderName = path.basename(folderPath);
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -65,7 +64,8 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                                 return AlertDialog(
                                   title: Text('Remove Folder'),
                                   content: Text(
-                                    'Are you sure you want to remove "$folderName" from the list? This will not delete the folder from your disk.',
+                                    'Are you sure you want to remove "$folderName" from the list? '
+                                    'This will not delete the folder from your disk.',
                                   ),
                                   actions: <Widget>[
                                     TextButton(
@@ -96,18 +96,21 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                 },
               ),
             ),
-            ElevatedButton(
-              onPressed: isScanning ? null : onScanButtonPressed,
-              child: isScanning
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : Icon(Icons.add),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ElevatedButton(
+                onPressed: isScanning ? null : onScanButtonPressed,
+                child: isScanning
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Icon(Icons.add),
+              ),
             ),
           ],
         ),

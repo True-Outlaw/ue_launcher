@@ -10,7 +10,6 @@ class RecentProjects extends StatelessWidget {
     return Flexible(
       fit: FlexFit.loose,
       child: Container(
-        color: Colors.green,
         height: 400,
         child: Text('Recent Projects'),
       ),

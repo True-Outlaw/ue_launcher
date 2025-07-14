@@ -41,7 +41,6 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
           Expanded(
             flex: 1,
             child: Container(
-              color: Colors.yellow,
               child: Text('Filters'),
             ),
           ),

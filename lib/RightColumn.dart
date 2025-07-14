@@ -12,7 +12,6 @@ class RightColumn extends StatelessWidget {
     return Expanded(
       flex: 4,
       child: Container(
-        color: Colors.red,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,

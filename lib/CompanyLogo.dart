@@ -8,7 +8,6 @@ class CompanyLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
       padding: EdgeInsets.all(8.0),
       child: CircleAvatar(
         radius: 30,
