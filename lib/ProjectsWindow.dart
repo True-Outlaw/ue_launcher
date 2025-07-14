@@ -20,8 +20,22 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
         children: <Widget>[
           Expanded(
             flex: 4,
-            child: Container(
-              color: Colors.pink,
+            child: DefaultTabController(
+              length: 2,
+              child: Scaffold(
+                appBar: TabBar(
+                  tabs: [
+                    Tab(child: Text('All')),
+                    Tab(child: Text('Favourites')),
+                  ],
+                ),
+                body: TabBarView(
+                  children: [
+                    Text('All'),
+                    Text('Favourites'),
+                  ],
+                ),
+              ),
             ),
           ),
           Expanded(
