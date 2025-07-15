@@ -9,16 +9,13 @@ class LeftColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CompanyLogo(),
-          ScannedFolders(),
-          RecentProjects(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CompanyLogo(),
+        ScannedFolders(),
+        RecentProjects(),
+      ],
     );
   }
 }

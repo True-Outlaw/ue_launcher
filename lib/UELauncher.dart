@@ -20,8 +20,14 @@ class UELauncher extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                LeftColumn(),
-                RightColumn(),
+                Expanded(
+                  flex: 1,
+                  child: LeftColumn(),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: RightColumn(),
+                ),
               ],
             ),
           ),

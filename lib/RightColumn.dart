@@ -9,28 +9,24 @@ class RightColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 4,
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Projects',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Container(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Engines',
+              style: Theme.of(context).textTheme.headlineLarge,
             ),
-            ProjectsWindow(),
-          ],
+          ),
         ),
-      ),
+        Expanded(
+          flex: 3,
+          child: ProjectsWindow(),
+        ),
+      ],
     );
   }
 }

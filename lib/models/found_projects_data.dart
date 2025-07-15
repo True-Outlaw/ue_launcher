@@ -4,6 +4,7 @@ import 'UnrealProjectData.dart';
 
 class FoundProjectsData extends ChangeNotifier {
   List<UnrealProjectData> foundProjects = [];
+  bool sorted = false;
 
   void removeProjectsFromPath(String path) {
     foundProjects.removeWhere((project) => project.path.contains(path));
@@ -22,6 +23,17 @@ class FoundProjectsData extends ChangeNotifier {
 
   void addProjects(List<UnrealProjectData> projects) {
     foundProjects.addAll(projects);
+    notifyListeners();
+  }
+
+  void sortProjectsByNameDescending() {
+    if (!sorted) {
+      foundProjects.sort((a, b) => a.name.compareTo(b.name));
+      sorted = true;
+    } else {
+      foundProjects.sort((a, b) => b.name.compareTo(a.name));
+      sorted = false;
+    }
     notifyListeners();
   }
 }

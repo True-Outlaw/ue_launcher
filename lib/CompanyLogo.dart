@@ -8,7 +8,7 @@ class CompanyLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(16.0),
       child: CircleAvatar(
         radius: 30,
         child: Image.asset('images/True-Outlaw-Logo.png'),
