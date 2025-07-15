@@ -19,6 +19,7 @@ class RightColumn extends StatelessWidget {
             Expanded(
               flex: 1,
               child: Container(
+                padding: EdgeInsets.all(8.0),
                 alignment: Alignment.centerLeft,
                 child: Text('Projects'),
               ),

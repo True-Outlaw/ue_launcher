@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'models/found_projects_data.dart';
 
 class ProjectsWindow extends StatefulWidget {
   const ProjectsWindow({
@@ -31,7 +34,15 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
                 ),
                 body: TabBarView(
                   children: [
-                    Text('All'),
+                    GridView.builder(
+                      itemCount: Provider.of<FoundProjectsData>(context).foundProjects.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Image.asset('images/True-Outlaw-Logo.png');
+                      },
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 300,
+                      ),
+                    ),
                     Text('Favourites'),
                   ],
                 ),

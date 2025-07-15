@@ -4,13 +4,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
-import 'UnrealProjectData.dart';
+import 'models/UnrealProjectData.dart';
+import 'models/found_projects_data.dart';
 
 class ScannedFolders extends StatefulWidget {
-  const ScannedFolders({
-    super.key,
-  });
+  ScannedFolders({super.key});
 
   @override
   State<ScannedFolders> createState() => _ScannedFoldersState();
@@ -19,6 +19,7 @@ class ScannedFolders extends StatefulWidget {
 class _ScannedFoldersState extends State<ScannedFolders> {
   List<String> scannedFolders = [];
   bool isScanning = false;
+  List<UnrealProjectData> foundProjects = [];
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,11 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                                     TextButton(
                                       child: Text('Remove'),
                                       onPressed: () {
+                                        Provider.of<FoundProjectsData>(
+                                          context,
+                                          listen: false,
+                                        ).removeProjectsFromPath(scannedFolders[index]);
+
                                         setState(() {
                                           scannedFolders.removeAt(index);
                                         });
@@ -126,7 +132,7 @@ class _ScannedFoldersState extends State<ScannedFolders> {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
     if (selectedDirectory != null && !scannedFolders.contains(selectedDirectory)) {
-      List<UnrealProjectData> foundProjects = await scanForUProjects(selectedDirectory);
+      foundProjects = await scanForUProjects(selectedDirectory);
 
       setState(() {
         if (!scannedFolders.contains(selectedDirectory)) {
@@ -137,6 +143,8 @@ class _ScannedFoldersState extends State<ScannedFolders> {
         if (kDebugMode) {
           print('Scan complete. Found ${foundProjects.length} projects.');
         }
+
+        Provider.of<FoundProjectsData>(context, listen: false).addProjects(foundProjects);
       });
     }
 

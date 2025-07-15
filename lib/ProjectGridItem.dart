@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'UnrealProjectData.dart';
+import 'models/UnrealProjectData.dart';
 
 class ProjectGridItem extends StatelessWidget {
   final UnrealProjectData projectData;

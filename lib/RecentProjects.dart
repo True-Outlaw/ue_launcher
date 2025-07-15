@@ -11,7 +11,10 @@ class RecentProjects extends StatelessWidget {
       fit: FlexFit.loose,
       child: Container(
         height: 400,
-        child: Text('Recent Projects'),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Recent Projects'),
+        ),
       ),
     );
   }
