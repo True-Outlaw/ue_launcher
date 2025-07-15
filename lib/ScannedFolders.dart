@@ -25,101 +25,101 @@ class _ScannedFoldersState extends State<ScannedFolders> {
   Widget build(BuildContext context) {
     return Flexible(
       fit: FlexFit.loose,
-      child: Container(
-        height: 400,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Folders',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          Flexible(
+            child: ListView.builder(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Folders'),
-            ),
-            Flexible(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                shrinkWrap: true,
-                itemCount: scannedFolders.length,
-                itemBuilder: (context, index) {
-                  final folderPath = scannedFolders[index];
-                  final folderName = path.basename(folderPath);
+              shrinkWrap: true,
+              itemCount: scannedFolders.length,
+              itemBuilder: (context, index) {
+                final folderPath = scannedFolders[index];
+                final folderName = path.basename(folderPath);
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: TextButton(
-                            style: TextButton.styleFrom(alignment: Alignment.centerLeft),
-                            child: Text(folderName),
-                            onPressed: () {},
-                          ),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(alignment: Alignment.centerLeft),
+                          child: Text(folderName),
+                          onPressed: () {},
                         ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          tooltip: 'Remove Folder',
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext dialogContext) {
-                                return AlertDialog(
-                                  title: Text('Remove Folder'),
-                                  content: Text(
-                                    'Are you sure you want to remove "$folderName" from the list? '
-                                    'This will not delete the folder from your disk.',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        tooltip: 'Remove Folder',
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return AlertDialog(
+                                title: Text('Remove Folder'),
+                                content: Text(
+                                  'Are you sure you want to remove "$folderName" from the list? '
+                                  'This will not delete the folder from your disk.',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                    },
                                   ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('Cancel'),
-                                      onPressed: () {
-                                        Navigator.of(dialogContext).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: Text('Remove'),
-                                      onPressed: () {
-                                        Provider.of<FoundProjectsData>(
-                                          context,
-                                          listen: false,
-                                        ).removeProjectsFromPath(scannedFolders[index]);
+                                  TextButton(
+                                    child: Text('Remove'),
+                                    onPressed: () {
+                                      Provider.of<FoundProjectsData>(
+                                        context,
+                                        listen: false,
+                                      ).removeProjectsFromPath(scannedFolders[index]);
 
-                                        setState(() {
-                                          scannedFolders.removeAt(index);
-                                        });
+                                      setState(() {
+                                        scannedFolders.removeAt(index);
+                                      });
 
-                                        Navigator.of(dialogContext).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                                      Navigator.of(dialogContext).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: ElevatedButton(
-                onPressed: isScanning ? null : onScanButtonPressed,
-                child: isScanning
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Icon(Icons.add),
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ElevatedButton(
+              onPressed: isScanning ? null : onScanButtonPressed,
+              child: isScanning
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Icon(Icons.add),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

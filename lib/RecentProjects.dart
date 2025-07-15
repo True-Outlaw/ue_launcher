@@ -9,11 +9,14 @@ class RecentProjects extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible(
       fit: FlexFit.loose,
-      child: Container(
-        height: 400,
+      child: SizedBox(
+        //height: 400,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text('Recent Projects'),
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Recent Projects',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
       ),
     );

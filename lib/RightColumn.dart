@@ -21,7 +21,10 @@ class RightColumn extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(8.0),
                 alignment: Alignment.centerLeft,
-                child: Text('Projects'),
+                child: Text(
+                  'Projects',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
               ),
             ),
             ProjectsWindow(),
