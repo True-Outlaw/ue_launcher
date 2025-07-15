@@ -180,10 +180,12 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
                         child: ImageWithVersionOverlay(
                           version: widget.projectData.engineVersion,
                           children: [
-                            Icon(
-                              Icons.folder_zip,
-                              size: 48,
-                              color: Colors.grey,
+                            Center(
+                              child: Icon(
+                                Icons.folder_zip,
+                                size: 48,
+                                color: Theme.of(context).hintColor,
+                              ),
                             ),
                           ],
                         ),

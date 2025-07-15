@@ -54,11 +54,20 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
                     },
                   ),
                   IconButton(
-                    tooltip: 'Sort by date modified',
+                    tooltip: 'Sort by project size',
                     padding: EdgeInsets.all(8.0),
                     icon: Icon(Icons.storage),
                     onPressed: () {
                       //TODO: implement sort by project size
+                      //Provider.of<FoundProjectsData>(context, listen: false).sortProjectsByNameDescending();
+                    },
+                  ),
+                  IconButton(
+                    tooltip: 'Sort by engine version',
+                    padding: EdgeInsets.all(8.0),
+                    icon: Icon(Icons.numbers),
+                    onPressed: () {
+                      //TODO: implement sort by engine version
                       //Provider.of<FoundProjectsData>(context, listen: false).sortProjectsByNameDescending();
                     },
                   ),

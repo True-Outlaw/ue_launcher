@@ -113,7 +113,6 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
                   : Icon(Icons.add),
