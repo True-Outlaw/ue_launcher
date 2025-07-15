@@ -43,9 +43,9 @@ class ProjectGridItem extends StatelessWidget {
           elevation: 4.0,
           margin: const EdgeInsets.all(8.0),
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 if (projectData.thumbnailPath != null && projectData.thumbnailPath!.isNotEmpty)
@@ -66,19 +66,27 @@ class ProjectGridItem extends StatelessWidget {
                     ),
                   )
                 else
-                  const Expanded(
+                  Expanded(
                     child: Center(
-                      child: Icon(Icons.folder_zip, size: 48, color: Colors.grey),
+                      child: ImageWithVersionOverlay(
+                        version: projectData.engineVersion,
+                        children: [
+                          Icon(
+                            Icons.folder_zip,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 8.0),
                 Text(
                   projectData.name,
                   style: Theme.of(context).textTheme.titleMedium,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4.0),
               ],
             ),
           ),

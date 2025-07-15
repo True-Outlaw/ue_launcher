@@ -149,7 +149,7 @@ class _ScannedFoldersState extends State<ScannedFolders> {
     }
 
     setState(() {
-      isScanning = false; // Stop scanning, update UI
+      isScanning = false;
     });
   }
 }
