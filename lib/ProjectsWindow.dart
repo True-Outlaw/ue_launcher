@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ue_launcher/ProjectGridItem.dart';
 
 import 'models/found_projects_data.dart';
 
@@ -34,14 +35,20 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
                 ),
                 body: TabBarView(
                   children: [
-                    GridView.builder(
-                      itemCount: Provider.of<FoundProjectsData>(context).foundProjects.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Image.asset('images/True-Outlaw-Logo.png');
+                    Consumer<FoundProjectsData>(
+                      builder: (context, projectsData, child) {
+                        return GridView.builder(
+                          itemCount: Provider.of<FoundProjectsData>(context, listen: true).foundProjects.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ProjectGridItem(
+                              projectData: Provider.of<FoundProjectsData>(context).foundProjects[index],
+                            );
+                          },
+                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 300,
+                          ),
+                        );
                       },
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 300,
-                      ),
                     ),
                     Text('Favourites'),
                   ],
