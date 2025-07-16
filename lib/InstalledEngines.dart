@@ -2,10 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ue_launcher/models/found_engines_data.dart';
 
-class InstalledEngines extends StatelessWidget {
+class InstalledEngines extends StatefulWidget {
   const InstalledEngines({
     super.key,
   });
+
+  @override
+  State<InstalledEngines> createState() => _InstalledEnginesState();
+}
+
+class _InstalledEnginesState extends State<InstalledEngines> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FoundEnginesData>(context, listen: false).tryLoadDefaultOrSavedEngine();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +61,14 @@ class InstalledEngines extends StatelessWidget {
                 ),
               ],
             ),
-            if (Provider.of<FoundEnginesData>(context, listen: true).isLoading &&
-                Provider.of<FoundEnginesData>(context, listen: true).foundEngines.isEmpty)
+            if (foundEnginesData.isLoading && foundEnginesData.foundEngines.isEmpty)
               const Center(
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: CircularProgressIndicator(),
                 ),
               )
-            else if (Provider.of<FoundEnginesData>(context, listen: true).foundEngines.isEmpty)
+            else if (foundEnginesData.foundEngines.isEmpty)
               Expanded(
                 child: Center(
                   child: Padding(
@@ -67,9 +80,9 @@ class InstalledEngines extends StatelessWidget {
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: Provider.of<FoundEnginesData>(context, listen: true).foundEngines.length,
+                  itemCount: foundEnginesData.foundEngines.length,
                   itemBuilder: (context, index) {
-                    final engine = Provider.of<FoundEnginesData>(context, listen: true).foundEngines[index];
+                    final engine = foundEnginesData.foundEngines[index];
                     return ListTile(
                       leading: const Icon(Icons.developer_mode), // Or a better UE icon
                       title: Text('Unreal Engine ${engine.version}'),
