@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ue_launcher/models/found_engines_data.dart';
+
+class InstalledEngines extends StatelessWidget {
+  const InstalledEngines({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<FoundEnginesData>(
+      builder: (context, foundEnginesData, child) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Engines',
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    icon: Icon(Icons.add_circle_outline),
+                    padding: EdgeInsets.all(8.0),
+                    onPressed: () {
+                      Provider.of<FoundEnginesData>(context, listen: false).manuallyAddEngine();
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    icon: Icon(Icons.refresh),
+                    padding: EdgeInsets.all(8.0),
+                    onPressed: () {},
+                  ),
+                ),
+              ],
+            ),
+            if (Provider.of<FoundEnginesData>(context, listen: true).isLoading &&
+                Provider.of<FoundEnginesData>(context, listen: true).foundEngines.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (Provider.of<FoundEnginesData>(context, listen: true).foundEngines.isEmpty)
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('No Unreal Engine installations configured.\nClick + to add one.'),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: Provider.of<FoundEnginesData>(context, listen: true).foundEngines.length,
+                  itemBuilder: (context, index) {
+                    final engine = Provider.of<FoundEnginesData>(context, listen: true).foundEngines[index];
+                    return ListTile(
+                      leading: const Icon(Icons.developer_mode), // Or a better UE icon
+                      title: Text('Unreal Engine ${engine.version}'),
+                      subtitle: Text(engine.path, overflow: TextOverflow.ellipsis),
+                      trailing: IconButton(
+                        icon: Icon(Icons.remove_circle_outline, color: Colors.red[300]),
+                        tooltip: 'Remove Engine',
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext ctx) {
+                              return AlertDialog(
+                                title: const Text('Confirm Removal'),
+                                content: Text(
+                                  'Are you sure you want to remove Unreal Engine ${engine.version} from the list?',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(ctx).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Remove'),
+                                    onPressed: () {
+                                      Provider.of<FoundEnginesData>(context, listen: false).removeEngine(engine);
+                                      Navigator.of(ctx).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      // You could add onTap to select an engine as "active" for launching projects
+                    );
+                  },
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}

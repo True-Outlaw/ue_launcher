@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'InstalledEngines.dart';
 import 'ProjectsWindow.dart';
 
 class RightColumn extends StatelessWidget {
@@ -14,13 +15,7 @@ class RightColumn extends StatelessWidget {
       children: [
         Expanded(
           flex: 1,
-          child: Container(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Engines',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-          ),
+          child: InstalledEngines(),
         ),
         Expanded(
           flex: 3,

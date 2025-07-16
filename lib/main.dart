@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ue_launcher/models/found_engines_data.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'UELauncher.dart';
+import 'models/found_projects_data.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,5 +23,13 @@ Future<void> main() async {
     });
   }
 
-  runApp(UELauncher());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => FoundProjectsData()),
+        ChangeNotifierProvider(create: (context) => FoundEnginesData()),
+      ],
+      child: UELauncher(),
+    ),
+  );
 }
