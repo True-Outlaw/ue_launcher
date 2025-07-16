@@ -4,7 +4,10 @@ import 'UnrealProjectData.dart';
 
 class FoundProjectsData extends ChangeNotifier {
   List<UnrealProjectData> foundProjects = [];
-  bool sorted = false;
+  bool sortedByName = false;
+  bool sortedByDateCreated = false;
+  bool sortedByDateModified = false;
+  bool sortedByEngineVersion = false;
 
   void removeProjectsFromPath(String path) {
     foundProjects.removeWhere((project) => project.path.contains(path));
@@ -26,13 +29,46 @@ class FoundProjectsData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void sortProjectsByNameDescending() {
-    if (!sorted) {
+  void sortProjectsByName() {
+    if (!sortedByName) {
       foundProjects.sort((a, b) => a.name.compareTo(b.name));
-      sorted = true;
+      sortedByName = true;
     } else {
       foundProjects.sort((a, b) => b.name.compareTo(a.name));
-      sorted = false;
+      sortedByName = false;
+    }
+    notifyListeners();
+  }
+
+  void sortProjectsByDateCreated() {
+    if (!sortedByDateCreated) {
+      foundProjects.sort((a, b) => a.created.compareTo(b.created));
+      sortedByDateCreated = true;
+    } else {
+      foundProjects.sort((a, b) => b.created.compareTo(a.created));
+      sortedByDateCreated = false;
+    }
+    notifyListeners();
+  }
+
+  void sortProjectsByDateModified() {
+    if (!sortedByDateModified) {
+      foundProjects.sort((a, b) => a.modified.compareTo(b.created));
+      sortedByDateModified = true;
+    } else {
+      foundProjects.sort((a, b) => b.modified.compareTo(a.created));
+      sortedByDateModified = false;
+    }
+    notifyListeners();
+  }
+
+  void sortProjectsByEngineVersion() {
+    if (!sortedByEngineVersion) {
+      foundProjects.sort((a, b) => a.engineVersion.compareTo(b.engineVersion));
+      sortedByEngineVersion = true;
+    } else {
+      foundProjects.sort((a, b) => b.engineVersion.compareTo(a.engineVersion));
+      sortedByEngineVersion = false;
     }
     notifyListeners();
   }
