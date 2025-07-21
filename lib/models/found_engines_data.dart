@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:ue_launcher/engine_locator.dart';
-import 'package:ue_launcher/models/UnrealEngineInfo.dart';
+import 'package:ue_launcher/models/engine_locator.dart';
+import 'package:ue_launcher/models/unreal_engine_info.dart';
 
 class FoundEnginesData extends ChangeNotifier {
   List<UnrealEngineInfo> foundEngines = [];

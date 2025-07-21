@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as pathPckg;
 import 'package:url_launcher/url_launcher.dart';
 
-import 'custom_widgets/image_with_version_overlay.dart';
-import 'models/UnrealProjectData.dart';
+import '../custom_widgets/image_with_version_overlay.dart';
+import '../models/unreal_project_data.dart';
 
 class ProjectGridItem extends StatefulWidget {
   final UnrealProjectData projectData;

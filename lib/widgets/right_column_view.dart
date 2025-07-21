@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'InstalledEngines.dart';
-import 'ProjectsWindow.dart';
+import 'installed_engines_view.dart';
+import 'projects_view.dart';
 
 class RightColumn extends StatelessWidget {
   const RightColumn({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'LeftColumn.dart';
-import 'RightColumn.dart';
+import 'left_column_view.dart';
+import 'right_column_view.dart';
 
 class UELauncher extends StatelessWidget {
   UELauncher({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'UnrealProjectData.dart';
+import 'unreal_project_data.dart';
 
 class FoundProjectsData extends ChangeNotifier {
   List<UnrealProjectData> foundProjects = [];

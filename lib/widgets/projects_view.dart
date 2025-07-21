@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'ProjectGridItem.dart';
-import 'models/found_projects_data.dart';
+import '../models/found_projects_data.dart';
+import 'project_grid_item.dart';
 
 class ProjectsWindow extends StatefulWidget {
   const ProjectsWindow({

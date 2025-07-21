@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as pathPckg;
 
-import 'models/UnrealEngineInfo.dart';
+import 'unreal_engine_info.dart';
 
 class EngineLocator {
   Future<List<UnrealEngineInfo>> getEngineInfoFromPath(String enginePath) async {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'CompanyLogo.dart';
-import 'RecentProjects.dart';
-import 'ScannedFolders.dart';
+import 'company_logo_view.dart';
+import 'recent_projects_view.dart';
+import 'scanned_folders_view.dart';
 
 class LeftColumn extends StatelessWidget {
   LeftColumn({super.key});

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
-import 'models/UnrealProjectData.dart';
-import 'models/found_projects_data.dart';
+import '../models/found_projects_data.dart';
+import '../models/unreal_project_data.dart';
 
 class ScannedFolders extends StatefulWidget {
   ScannedFolders({super.key});
