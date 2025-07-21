@@ -17,12 +17,12 @@ class ScannedFolders extends StatefulWidget {
 }
 
 class _ScannedFoldersState extends State<ScannedFolders> {
-  List<String> scannedFolders = [];
   bool isScanning = false;
-  List<UnrealProjectData> foundProjects = [];
 
   @override
   Widget build(BuildContext context) {
+    final scannedFolders = context.watch<FoundProjectsData>().scannedFolders;
+
     return Flexible(
       fit: FlexFit.loose,
       child: Column(
@@ -82,11 +82,7 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                                       Provider.of<FoundProjectsData>(
                                         context,
                                         listen: false,
-                                      ).removeProjectsFromPath(scannedFolders[index]);
-
-                                      setState(() {
-                                        scannedFolders.removeAt(index);
-                                      });
+                                      ).removeFoldersFromPath(scannedFolders[index]);
 
                                       Navigator.of(dialogContext).pop();
                                     },
@@ -130,21 +126,18 @@ class _ScannedFoldersState extends State<ScannedFolders> {
 
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
-    if (selectedDirectory != null && !scannedFolders.contains(selectedDirectory)) {
-      foundProjects = await scanForUProjects(selectedDirectory);
+    if (selectedDirectory != null) {
+      final projects = await scanForUProjects(selectedDirectory);
 
-      setState(() {
-        if (!scannedFolders.contains(selectedDirectory)) {
-          scannedFolders.add(selectedDirectory);
-        }
-        // You might want to do something with foundProjects here,
-        // like adding them to another list to display project details.
+      if (projects.isNotEmpty) {
         if (kDebugMode) {
-          print('Scan complete. Found ${foundProjects.length} projects.');
+          print('Scan complete. Found ${projects.length} projects.');
         }
 
-        Provider.of<FoundProjectsData>(context, listen: false).addProjects(foundProjects);
-      });
+        if (mounted) {
+          Provider.of<FoundProjectsData>(context, listen: false).addFolders(projects, scannedFolder: selectedDirectory);
+        }
+      }
     }
 
     setState(() {

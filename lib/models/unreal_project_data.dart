@@ -58,4 +58,31 @@ class UnrealProjectData {
       return null;
     }
   }
+
+  factory UnrealProjectData.fromJson(Map<String, dynamic> json) {
+    return UnrealProjectData(
+      name: json['name'],
+      path: json['path'],
+      created: DateTime.parse(json['created']),
+      modified: DateTime.parse(json['modified']),
+      engineVersion: json['engineVersion'],
+      thumbnailPath: json['thumbnailPath'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'path': path,
+    'created': created.toIso8601String(),
+    'modified': modified.toIso8601String(),
+    'engineVersion': engineVersion,
+    'thumbnailPath': thumbnailPath,
+  };
+
+  // Optional: for quick lookup
+  @override
+  bool operator ==(Object other) => other is UnrealProjectData && other.path == path;
+
+  @override
+  int get hashCode => path.hashCode;
 }

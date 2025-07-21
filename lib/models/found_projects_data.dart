@@ -1,33 +1,97 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'unreal_project_data.dart';
 
 class FoundProjectsData extends ChangeNotifier {
+  List<String> scannedFolders = [];
   List<UnrealProjectData> foundProjects = [];
   bool sortedByName = false;
   bool sortedByDateCreated = false;
   bool sortedByDateModified = false;
   bool sortedByEngineVersion = false;
 
-  void removeProjectsFromPath(String path) {
-    foundProjects.removeWhere((project) => project.path.contains(path));
-    notifyListeners();
+  static const _fileName = 'projects.json';
+
+  Future<File> get _localFile async {
+    final dir = await getApplicationSupportDirectory();
+    return File('${dir.path}/$_fileName');
   }
 
-  void removeProjects(List<UnrealProjectData> projects) {
-    foundProjects.removeWhere((project) => projects.contains(project));
-    notifyListeners();
+  Future<void> loadProjects() async {
+    try {
+      final file = await _localFile;
+
+      if (await file.exists()) {
+        final contents = await file.readAsString();
+        final Map<String, dynamic> data = jsonDecode(contents);
+
+        final List<dynamic> projectList = data['projects'] ?? [];
+        foundProjects = projectList.map((json) => UnrealProjectData.fromJson(json)).toList();
+
+        scannedFolders = List<String>.from(data['folders'] ?? []);
+        notifyListeners();
+      }
+    } catch (e) {
+      if (kDebugMode) print('Failed to load projects: $e');
+    }
   }
 
-  void addProject(UnrealProjectData project) {
-    foundProjects.add(project);
-    notifyListeners();
+  Future<void> saveProjects() async {
+    try {
+      final file = await _localFile;
+      final data = {
+        'projects': foundProjects.map((p) => p.toJson()).toList(),
+        'folders': scannedFolders,
+      };
+      await file.writeAsString(jsonEncode(data));
+    } catch (e) {
+      if (kDebugMode) print('Failed to save projects: $e');
+    }
   }
 
-  void addProjects(List<UnrealProjectData> projects) {
+  void addFolders(List<UnrealProjectData> projects, {String? scannedFolder}) {
     foundProjects.addAll(projects);
+    if (scannedFolder != null && !scannedFolders.contains(scannedFolder)) {
+      scannedFolders.add(scannedFolder);
+    }
     notifyListeners();
+    saveProjects();
   }
+
+  void removeFoldersFromPath(String path) {
+    foundProjects.removeWhere((p) => p.path.contains(path));
+    scannedFolders.removeWhere((folder) => folder == path);
+    notifyListeners();
+    saveProjects();
+  }
+
+  // void removeProjectsFromPath(String path) {
+  //   foundProjects.removeWhere((project) => project.path.contains(path));
+  //   notifyListeners();
+  //   saveProjects();
+  // }
+  //
+  // void removeProjects(List<UnrealProjectData> projects) {
+  //   foundProjects.removeWhere((project) => projects.contains(project));
+  //   notifyListeners();
+  //   saveProjects();
+  // }
+  //
+  // void addProject(UnrealProjectData project) {
+  //   foundProjects.add(project);
+  //   notifyListeners();
+  //   saveProjects();
+  // }
+  //
+  // void addProjects(List<UnrealProjectData> projects) {
+  //   foundProjects.addAll(projects);
+  //   notifyListeners();
+  //   saveProjects();
+  // }
 
   void sortProjectsByName() {
     if (!sortedByName) {

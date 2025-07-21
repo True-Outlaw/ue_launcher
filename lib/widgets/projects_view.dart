@@ -17,6 +17,15 @@ class ProjectsWindow extends StatefulWidget {
 
 class _ProjectsWindowState extends State<ProjectsWindow> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FoundProjectsData>(context, listen: false).loadProjects();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
