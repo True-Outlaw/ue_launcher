@@ -86,9 +86,23 @@ class EngineLocator {
 
         String versionString = '$major.$minor.$patch';
 
+        String executablePath = path_pckg.join(dir.path, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe');
+
+        final executableFile = File(executablePath);
+
+        if (!await executableFile.exists()) {
+          if (kDebugMode) {
+            print('Executable file does not exist: $executablePath');
+          }
+          // TODO: You might want to return null here or handle this case differently,
+          // as an engine without an executable isn't launchable.
+          // For now, we'll still return the info but the executablePath will be invalid.
+        }
+
         return UnrealEngineInfo(
           version: versionString,
           path: dir.path,
+          executablePath: executablePath,
         );
       } catch (e) {
         if (kDebugMode) {

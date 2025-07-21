@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ue_launcher/models/found_engines_data.dart';
 
+import 'unreal_engine_display_item.dart';
+
 class InstalledEngines extends StatefulWidget {
   const InstalledEngines({
     super.key,
@@ -80,47 +82,11 @@ class _InstalledEnginesState extends State<InstalledEngines> {
             else
               Expanded(
                 child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
                   itemCount: foundEnginesData.foundEngines.length,
                   itemBuilder: (context, index) {
                     final engine = foundEnginesData.foundEngines[index];
-                    return ListTile(
-                      leading: const Icon(Icons.developer_mode), // Or a better UE icon
-                      title: Text('Unreal Engine ${engine.version}'),
-                      subtitle: Text(engine.path, overflow: TextOverflow.ellipsis),
-                      trailing: IconButton(
-                        icon: Icon(Icons.remove_circle_outline, color: Colors.red[300]),
-                        tooltip: 'Remove Engine',
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext ctx) {
-                              return AlertDialog(
-                                title: const Text('Confirm Removal'),
-                                content: Text(
-                                  'Are you sure you want to remove Unreal Engine ${engine.version} from the list?',
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(ctx).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('Remove'),
-                                    onPressed: () {
-                                      Provider.of<FoundEnginesData>(context, listen: false).removeEngine(engine);
-                                      Navigator.of(ctx).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      // You could add onTap to select an engine as "active" for launching projects
-                    );
+                    return UnrealEngineDisplayItem(engineInfo: engine);
                   },
                 ),
               ),
