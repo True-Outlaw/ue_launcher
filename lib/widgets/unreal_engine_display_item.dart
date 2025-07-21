@@ -39,23 +39,22 @@ class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
     return Stack(
       children: [
         Container(
-          padding: const EdgeInsets.all(16.0),
+          height: 106,
+          padding: const EdgeInsets.all(12.0),
           margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             border: Border.all(
               width: 2,
               color: Colors.white,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(24.0)),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Image.asset(
                 'images/UE-Icon-2023-White.png',
                 alignment: Alignment.centerLeft,
-              ),
-              SizedBox(
-                width: 8.0,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -66,7 +65,7 @@ class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   SizedBox(
-                    height: 8.0,
+                    height: 2.0,
                   ),
                   ElevatedButton(
                     child: Text('Launch'),
@@ -99,7 +98,7 @@ class RemoveEngineDisplayItem extends StatelessWidget {
       child: Align(
         alignment: Alignment.topLeft,
         child: Padding(
-          padding: const EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(4.0),
           child: IconButton(
             icon: Icon(
               Icons.remove_circle_outline,

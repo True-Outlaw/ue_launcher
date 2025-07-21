@@ -14,12 +14,15 @@ Future<void> main() async {
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     WindowOptions windowOptions = WindowOptions(
-      minimumSize: Size(800, 800),
+      minimumSize: Size(1280, 800),
+      size: Size(1280, 800),
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await windowManager.show();
+        await windowManager.focus();
+      });
     });
   }
 

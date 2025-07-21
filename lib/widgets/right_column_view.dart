@@ -11,12 +11,9 @@ class RightColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          flex: 1,
-          child: InstalledEngines(),
-        ),
+        InstalledEngines(),
         Expanded(
           flex: 3,
           child: ProjectsWindow(),

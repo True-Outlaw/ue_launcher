@@ -20,7 +20,7 @@ class FoundEnginesData extends ChangeNotifier {
       }
     }
 
-    foundEngines.sort((a, b) => b.version.compareTo(a.version));
+    foundEngines.sort((a, b) => a.version.compareTo(b.version));
 
     isLoading = false;
     notifyListeners();

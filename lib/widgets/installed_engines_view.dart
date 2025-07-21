@@ -32,22 +32,24 @@ class _InstalledEnginesState extends State<InstalledEngines> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Engines',
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(
+                    8.0,
+                    8.0,
+                    16.0,
+                    8.0,
+                  ),
+                  child: Text(
+                    'Engines',
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
                     icon: Icon(Icons.add_circle_outline),
-                    padding: EdgeInsets.all(8.0),
                     onPressed: () {
                       Provider.of<FoundEnginesData>(context, listen: false).manuallyAddEngine();
                     },
@@ -57,21 +59,24 @@ class _InstalledEnginesState extends State<InstalledEngines> {
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
                     icon: Icon(Icons.refresh),
-                    padding: EdgeInsets.all(8.0),
                     onPressed: () {},
                   ),
                 ),
               ],
             ),
             if (foundEnginesData.isLoading && foundEnginesData.foundEngines.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
+              SizedBox(
+                height: 160,
+                child: const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               )
             else if (foundEnginesData.foundEngines.isEmpty)
-              Expanded(
+              SizedBox(
+                height: 160,
                 child: Center(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
@@ -80,8 +85,11 @@ class _InstalledEnginesState extends State<InstalledEngines> {
                 ),
               )
             else
-              Expanded(
+              SizedBox(
+                height: 160,
                 child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(8.0),
                   scrollDirection: Axis.horizontal,
                   itemCount: foundEnginesData.foundEngines.length,
                   itemBuilder: (context, index) {
