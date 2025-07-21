@@ -5,7 +5,7 @@ import 'recent_projects_view.dart';
 import 'scanned_folders_view.dart';
 
 class LeftColumn extends StatelessWidget {
-  LeftColumn({super.key});
+  const LeftColumn({super.key});
 
   @override
   Widget build(BuildContext context) {

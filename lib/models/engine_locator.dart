@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as pathPckg;
+import 'package:path/path.dart' as path_pckg;
 
 import 'unreal_engine_info.dart';
 
@@ -74,7 +74,7 @@ class EngineLocator {
   }
 
   Future<UnrealEngineInfo?> _tryParseEngineInfo(Directory dir) async {
-    final buildVersionFile = File(pathPckg.join(dir.path, 'Engine', 'Build', 'Build.version'));
+    final buildVersionFile = File(path_pckg.join(dir.path, 'Engine', 'Build', 'Build.version'));
 
     if (await buildVersionFile.exists()) {
       try {
@@ -83,7 +83,6 @@ class EngineLocator {
         final major = jsonData['MajorVersion'];
         final minor = jsonData['MinorVersion'];
         final patch = jsonData['PatchVersion'];
-        final branch = jsonData['BranchName'];
 
         String versionString = '$major.$minor.$patch';
 

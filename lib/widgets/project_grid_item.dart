@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as pathPckg;
+import 'package:path/path.dart' as path_pckg;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../custom_widgets/image_with_version_overlay.dart';
@@ -39,7 +39,7 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
 
   Future<void> openProjectInFileExplorer(BuildContext context, String path) async {
     try {
-      String directoryPath = pathPckg.dirname(path);
+      String directoryPath = path_pckg.dirname(path);
       final Uri fileExplorerUri = Uri.directory(directoryPath);
 
       if (await canLaunchUrl(fileExplorerUri)) {

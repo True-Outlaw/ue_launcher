@@ -10,7 +10,7 @@ import '../models/found_projects_data.dart';
 import '../models/unreal_project_data.dart';
 
 class ScannedFolders extends StatefulWidget {
-  ScannedFolders({super.key});
+  const ScannedFolders({super.key});
 
   @override
   State<ScannedFolders> createState() => _ScannedFoldersState();

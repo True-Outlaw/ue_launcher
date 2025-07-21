@@ -4,7 +4,7 @@ import 'left_column_view.dart';
 import 'right_column_view.dart';
 
 class UELauncher extends StatelessWidget {
-  UELauncher({super.key});
+  const UELauncher({super.key});
 
   @override
   Widget build(BuildContext context) {

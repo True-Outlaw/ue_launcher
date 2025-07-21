@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as pathPckg;
+import 'package:path/path.dart' as path_pckg;
 
 class UnrealProjectData {
   final String path;
@@ -26,7 +26,7 @@ class UnrealProjectData {
       final jsonText = await file.readAsString();
       final data = json.decode(jsonText);
 
-      final name = data['Modules']?[0]?['Name'] ?? pathPckg.basenameWithoutExtension(file.path);
+      final name = data['Modules']?[0]?['Name'] ?? path_pckg.basenameWithoutExtension(file.path);
       final version = data['EngineAssociation'] ?? 'Unknown';
 
       final stat = await file.stat();
