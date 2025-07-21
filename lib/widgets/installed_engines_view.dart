@@ -59,7 +59,9 @@ class _InstalledEnginesState extends State<InstalledEngines> {
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
                     icon: Icon(Icons.refresh),
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<FoundEnginesData>(context, listen: false).tryLoadDefaultOrSavedEngine();
+                    },
                   ),
                 ),
               ],

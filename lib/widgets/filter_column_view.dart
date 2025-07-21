@@ -13,6 +13,7 @@ class FilterColumn extends StatelessWidget {
         horizontal: 16.0,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             'Filters',

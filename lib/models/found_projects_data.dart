@@ -55,9 +55,12 @@ class FoundProjectsData extends ChangeNotifier {
 
   void addFolders(List<UnrealProjectData> projects, {String? scannedFolder}) {
     foundProjects.addAll(projects);
+    sortProjectsByDateModified();
+
     if (scannedFolder != null && !scannedFolders.contains(scannedFolder)) {
       scannedFolders.add(scannedFolder);
     }
+
     notifyListeners();
     saveProjects();
   }

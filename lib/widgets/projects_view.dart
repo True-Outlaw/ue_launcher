@@ -44,7 +44,7 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
                     );
                   },
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 300,
+                    maxCrossAxisExtent: 250,
                   ),
                 ),
               ),

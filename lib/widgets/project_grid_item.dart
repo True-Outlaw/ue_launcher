@@ -148,9 +148,8 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
             color: cardColor,
             elevation: 8.0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
+              borderRadius: BorderRadius.circular(16),
             ),
-            margin: const EdgeInsets.all(8.0),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -162,14 +161,14 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
                       child: ImageWithVersionOverlay(
                         version: widget.projectData.engineVersion,
                         children: [
-                          Center(
-                            child: Image.file(
-                              File(widget.projectData.thumbnailPath!),
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.broken_image, size: 48);
-                              },
-                            ),
+                          Image.file(
+                            File(widget.projectData.thumbnailPath!),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.broken_image, size: 48);
+                            },
                           ),
                         ],
                       ),
