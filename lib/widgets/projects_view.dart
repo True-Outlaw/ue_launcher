@@ -37,10 +37,10 @@ class _ProjectsWindowState extends State<ProjectsWindow> {
               ProjectsHeaderAndSort(),
               Expanded(
                 child: GridView.builder(
-                  itemCount: Provider.of<FoundProjectsData>(context, listen: true).foundProjects.length,
+                  itemCount: Provider.of<FoundProjectsData>(context, listen: true).filteredProjects.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ProjectGridItem(
-                      projectData: Provider.of<FoundProjectsData>(context).foundProjects[index],
+                      projectData: Provider.of<FoundProjectsData>(context).filteredProjects[index],
                     );
                   },
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
