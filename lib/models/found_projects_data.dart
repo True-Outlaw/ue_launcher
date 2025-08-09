@@ -9,6 +9,8 @@ import 'unreal_project_data.dart';
 class FoundProjectsData extends ChangeNotifier {
   List<String> scannedFolders = [];
   List<UnrealProjectData> foundProjects = [];
+  List<UnrealProjectData> filteredProjects = [];
+
   bool sortedByName = false;
   bool sortedByDateCreated = false;
   bool sortedByDateModified = false;
@@ -31,6 +33,7 @@ class FoundProjectsData extends ChangeNotifier {
 
         final List<dynamic> projectList = data['projects'] ?? [];
         foundProjects = projectList.map((json) => UnrealProjectData.fromJson(json)).toList();
+        filteredProjects = foundProjects;
 
         scannedFolders = List<String>.from(data['folders'] ?? []);
         notifyListeners();
@@ -72,6 +75,17 @@ class FoundProjectsData extends ChangeNotifier {
     saveProjects();
   }
 
+  void searchForProjects(String searchQuery) {
+    filteredProjects = foundProjects.where((project) {
+      return project.name.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+    notifyListeners();
+  }
+
+  void cancelSearch() {
+    filteredProjects = foundProjects;
+    notifyListeners();
+  }
   // void removeProjectsFromPath(String path) {
   //   foundProjects.removeWhere((project) => project.path.contains(path));
   //   notifyListeners();
