@@ -23,3 +23,16 @@ Some ideas for future development:
 - Installing and updating new engine versions
 - A Fab Library window
 - The ability to manage the local Asset Vault
+
+## How to use
+
+Builds have been uploaded to the release folder within the main directory. Select the version you need and download it as a ZIP file. 
+After extracting the files, the application should run by selecting the .exe file.
+
+## How to Add Features
+
+If this project resonates with you, and you'd like to work on it and improve it, please do! The licence is MIT Open Source, so you 
+may take this as a base for your own application, but I would appreciate it if this repo was kept alive with any useful updates.
+
+The project uses the Flutter framework. If you need any help setting yourself up for working with flutter, or just if you want to 
+build from source (to another platform, for example), please visit https://flutter.dev/.
