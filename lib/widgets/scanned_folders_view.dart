@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 import '../models/found_projects_data.dart';
-import '../models/unreal_project_data.dart';
 
 class ScannedFolders extends StatefulWidget {
   const ScannedFolders({super.key});
@@ -17,11 +13,11 @@ class ScannedFolders extends StatefulWidget {
 }
 
 class _ScannedFoldersState extends State<ScannedFolders> {
-  bool isScanning = false;
-
   @override
   Widget build(BuildContext context) {
-    final scannedFolders = context.watch<FoundProjectsData>().scannedFolders;
+    final projectsData = context.watch<FoundProjectsData>();
+    final scannedFolders = projectsData.scannedFolders;
+    final isScanning = projectsData.isScanning;
 
     return Flexible(
       fit: FlexFit.loose,
@@ -30,9 +26,28 @@ class _ScannedFoldersState extends State<ScannedFolders> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Folders',
-              style: Theme.of(context).textTheme.titleLarge,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Folders',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                if (isScanning)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(Icons.refresh, size: 20),
+                    tooltip: 'Rescan all folders',
+                    onPressed: () {
+                      context.read<FoundProjectsData>().rescanAllFolders();
+                    },
+                  ),
+              ],
             ),
           ),
           Flexible(
@@ -57,41 +72,52 @@ class _ScannedFoldersState extends State<ScannedFolders> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.refresh, size: 20),
+                        tooltip: 'Rescan this folder',
+                        onPressed: isScanning
+                            ? null
+                            : () {
+                                context.read<FoundProjectsData>().rescanFolder(folderPath);
+                              },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, size: 20),
                         tooltip: 'Remove Folder',
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext dialogContext) {
-                              return AlertDialog(
-                                title: Text('Remove Folder'),
-                                content: Text(
-                                  'Are you sure you want to remove "$folderName" from the list? '
-                                  'This will not delete the folder from your disk.',
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(dialogContext).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text('Remove'),
-                                    onPressed: () {
-                                      Provider.of<FoundProjectsData>(
-                                        context,
-                                        listen: false,
-                                      ).removeFoldersFromPath(scannedFolders[index]);
+                        onPressed: isScanning
+                            ? null
+                            : () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext dialogContext) {
+                                    return AlertDialog(
+                                      title: Text('Remove Folder'),
+                                      content: Text(
+                                        'Are you sure you want to remove "$folderName" from the list? '
+                                        'This will not delete the folder from your disk.',
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Remove'),
+                                          onPressed: () {
+                                            Provider.of<FoundProjectsData>(
+                                              context,
+                                              listen: false,
+                                            ).removeFoldersFromPath(scannedFolders[index]);
 
-                                      Navigator.of(dialogContext).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                       ),
                     ],
                   ),
@@ -103,15 +129,7 @@ class _ScannedFoldersState extends State<ScannedFolders> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ElevatedButton(
               onPressed: isScanning ? null : onScanButtonPressed,
-              child: isScanning
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.0,
-                      ),
-                    )
-                  : Icon(Icons.add),
+              child: const Icon(Icons.add),
             ),
           ),
         ],
@@ -120,83 +138,16 @@ class _ScannedFoldersState extends State<ScannedFolders> {
   }
 
   void onScanButtonPressed() async {
-    setState(() {
-      isScanning = true;
-    });
-
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
-    if (selectedDirectory != null) {
-      final projects = await scanForUProjects(selectedDirectory);
+    if (selectedDirectory != null && mounted) {
+      final projectsData = Provider.of<FoundProjectsData>(context, listen: false);
 
-      if (projects.isNotEmpty) {
-        if (kDebugMode) {
-          print('Scan complete. Found ${projects.length} projects.');
-        }
-
-        if (mounted) {
-          Provider.of<FoundProjectsData>(context, listen: false).addFolders(projects, scannedFolder: selectedDirectory);
-        }
+      // We'll add the folder to the list first, then trigger a rescan
+      if (!projectsData.scannedFolders.contains(selectedDirectory)) {
+        projectsData.scannedFolders.add(selectedDirectory);
+        projectsData.rescanAllFolders();
       }
-    }
-
-    setState(() {
-      isScanning = false;
-    });
-  }
-}
-
-Future<List<UnrealProjectData>> scanForUProjects(String folder) async {
-  final projects = <UnrealProjectData>[];
-  final Set<String> visitedFolders = {}; // Keep track of visited folders to avoid redundant scans
-
-  Future<void> scanDirectory(Directory directory) async {
-    if (visitedFolders.contains(directory.path)) {
-      return; // Already processed this folder
-    }
-    visitedFolders.add(directory.path);
-
-    try {
-      final List<FileSystemEntity> entities = await directory.list().toList();
-      bool uprojectFoundInCurrentDir = false;
-
-      for (final entity in entities) {
-        if (entity is File && entity.path.endsWith('.uproject')) {
-          final proj = await UnrealProjectData.fromFile(entity);
-          if (proj != null) {
-            projects.add(proj);
-            uprojectFoundInCurrentDir = true;
-            if (kDebugMode) {
-              print('Found project: ${proj.name} in ${entity.path}');
-            }
-          }
-        }
-      }
-
-      // If a .uproject file was found in the current directory,
-      // don't scan its subdirectories.
-      if (uprojectFoundInCurrentDir) {
-        return;
-      }
-
-      // If no .uproject file was found, recursively scan subdirectories
-      for (final entity in entities) {
-        if (entity is Directory) {
-          // Check if the subdirectory might contain a project
-          // (e.g., by looking for common Unreal Engine folder names or just proceed)
-          // For simplicity, this example will scan all subdirectories
-          // if no .uproject is found at the current level.
-          await scanDirectory(entity);
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error scanning directory ${directory.path}: $e');
-      }
-      // Handle errors, e.g., permission issues
     }
   }
-
-  await scanDirectory(Directory(folder));
-  return projects;
 }

@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_pckg;
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../custom_widgets/image_with_version_overlay.dart';
+import '../models/found_projects_data.dart';
 import '../models/unreal_project_data.dart';
 
 class ProjectGridItem extends StatefulWidget {
@@ -21,16 +23,19 @@ class ProjectGridItem extends StatefulWidget {
 }
 
 class _ProjectGridItemState extends State<ProjectGridItem> {
-  Future<void> openProject(BuildContext context, String path) async {
-    final Uri projectFileUri = Uri.file(path);
+  Future<void> openProject(BuildContext context, UnrealProjectData project) async {
+    final Uri projectFileUri = Uri.file(project.path);
 
     if (await canLaunchUrl(projectFileUri)) {
+      if (context.mounted) {
+        Provider.of<FoundProjectsData>(context, listen: false).recordProjectLaunch(project);
+      }
       await launchUrl(projectFileUri);
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not launch $path'),
+            content: Text('Could not launch ${project.path}'),
           ),
         );
       }
@@ -136,7 +141,7 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
       },
       child: GestureDetector(
         onDoubleTap: () {
-          openProject(context, widget.projectData.path);
+          openProject(context, widget.projectData);
         },
         onSecondaryTapUp: (tapUpDetails) {
           showContextMenu(context, tapUpDetails);

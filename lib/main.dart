@@ -16,6 +16,7 @@ Future<void> main() async {
     WindowOptions windowOptions = WindowOptions(
       minimumSize: Size(1280, 800),
       size: Size(1280, 800),
+      center: true,
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {

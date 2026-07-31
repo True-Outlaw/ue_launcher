@@ -89,20 +89,20 @@ class EngineLocator {
         String executablePath = path_pckg.join(dir.path, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe');
 
         final executableFile = File(executablePath);
+        bool isLaunchable = true;
 
         if (!await executableFile.exists()) {
           if (kDebugMode) {
             print('Executable file does not exist: $executablePath');
           }
-          // TODO: You might want to return null here or handle this case differently,
-          // as an engine without an executable isn't launchable.
-          // For now, we'll still return the info but the executablePath will be invalid.
+          isLaunchable = false;
         }
 
         return UnrealEngineInfo(
           version: versionString,
           path: dir.path,
           executablePath: executablePath,
+          isLaunchable: isLaunchable,
         );
       } catch (e) {
         if (kDebugMode) {

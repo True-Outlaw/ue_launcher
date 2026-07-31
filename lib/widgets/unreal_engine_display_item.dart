@@ -36,46 +36,62 @@ class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLaunchable = widget.engineInfo.isLaunchable;
+
     return Stack(
       children: [
-        Container(
-          height: 106,
-          padding: const EdgeInsets.all(12.0),
-          margin: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 2,
-              color: Colors.white,
+        Opacity(
+          opacity: isLaunchable ? 1.0 : 0.5,
+          child: Container(
+            height: 106,
+            padding: const EdgeInsets.all(12.0),
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 2,
+                color: isLaunchable ? Colors.white : Colors.grey,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset(
-                'images/UE-Icon-2023-White.png',
-                alignment: Alignment.centerLeft,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    widget.engineInfo.version,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  SizedBox(
-                    height: 2.0,
-                  ),
-                  ElevatedButton(
-                    child: Text('Launch'),
-                    onPressed: () {
-                      openEngine(context, widget.engineInfo.executablePath);
-                    },
-                  ),
-                ],
-              ),
-            ],
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset(
+                  'images/UE-Icon-2023-White.png',
+                  alignment: Alignment.centerLeft,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      children: [
+                        if (!isLaunchable)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Icon(Icons.warning, color: Colors.amber, size: 24),
+                          ),
+                        Text(
+                          widget.engineInfo.version,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 2.0,
+                    ),
+                    ElevatedButton(
+                      onPressed: isLaunchable
+                          ? () {
+                              openEngine(context, widget.engineInfo.executablePath);
+                            }
+                          : null,
+                      child: const Text('Launch'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         RemoveEngineDisplayItem(widget: widget),
