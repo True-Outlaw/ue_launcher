@@ -61,35 +61,38 @@ class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
                   'images/UE-Icon-2023-White.png',
                   alignment: Alignment.centerLeft,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      children: [
-                        if (!isLaunchable)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(Icons.warning, color: Colors.amber, size: 24),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (!isLaunchable)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: Icon(Icons.warning, color: Colors.amber, size: 24),
+                            ),
+                          Text(
+                            widget.engineInfo.version,
+                            style: Theme.of(context).textTheme.headlineLarge,
                           ),
-                        Text(
-                          widget.engineInfo.version,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 2.0,
-                    ),
-                    ElevatedButton(
-                      onPressed: isLaunchable
-                          ? () {
-                              openEngine(context, widget.engineInfo.executablePath);
-                            }
-                          : null,
-                      child: const Text('Launch'),
-                    ),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 2.0,
+                      ),
+                      ElevatedButton(
+                        onPressed: isLaunchable
+                            ? () {
+                                openEngine(context, widget.engineInfo.executablePath);
+                              }
+                            : null,
+                        child: const Text('LAUNCH'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -140,7 +143,10 @@ class RemoveEngineDisplayItem extends StatelessWidget {
                       TextButton(
                         child: const Text('Remove'),
                         onPressed: () {
-                          Provider.of<FoundEnginesData>(context, listen: false).removeEngine(widget.engineInfo);
+                          Provider.of<FoundEnginesData>(
+                            context,
+                            listen: false,
+                          ).removeEngine(widget.engineInfo);
                           Navigator.of(ctx).pop();
                         },
                       ),

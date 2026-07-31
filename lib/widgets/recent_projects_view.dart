@@ -51,63 +51,59 @@ class RecentProjects extends StatelessWidget {
       );
     }).toList();
 
-    return Flexible(
-      fit: FlexFit.loose,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Recent Projects',
-              style: Theme.of(context).textTheme.titleLarge,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Recent Projects',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        if (recentProjects.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text('No recently opened projects.'),
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              itemCount: recentProjects.length,
+              itemBuilder: (context, index) {
+                final project = recentProjects[index];
+                return ListTile(
+                  dense: true,
+                  leading: project.thumbnailPath != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Image.file(
+                            File(project.thumbnailPath!),
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.folder),
+                          ),
+                        )
+                      : const Icon(Icons.folder),
+                  title: Text(
+                    project.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    project.engineVersion,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  onTap: () {
+                    openProject(context, project);
+                  },
+                );
+              },
             ),
           ),
-          if (recentProjects.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text('No recently opened projects.'),
-            )
-          else
-            Flexible(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                shrinkWrap: true,
-                itemCount: recentProjects.length,
-                itemBuilder: (context, index) {
-                  final project = recentProjects[index];
-                  return ListTile(
-                    dense: true,
-                    leading: project.thumbnailPath != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.file(
-                              File(project.thumbnailPath!),
-                              width: 32,
-                              height: 32,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.folder),
-                            ),
-                          )
-                        : const Icon(Icons.folder),
-                    title: Text(
-                      project.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      project.engineVersion,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    onTap: () {
-                      openProject(context, project);
-                    },
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

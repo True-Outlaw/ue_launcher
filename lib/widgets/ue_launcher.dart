@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'left_column_view.dart';
 import 'right_column_view.dart';
-import 'status_bar_view.dart';
 
 class UELauncher extends StatelessWidget {
   const UELauncher({super.key});
@@ -31,7 +30,6 @@ class UELauncher extends StatelessWidget {
                   ],
                 ),
               ),
-              const StatusBar(),
             ],
           ),
         ),

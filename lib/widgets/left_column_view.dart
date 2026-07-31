@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'company_logo_view.dart';
 import 'recent_projects_view.dart';
 import 'scanned_folders_view.dart';
+import 'status_bar_view.dart';
 
 class LeftColumn extends StatelessWidget {
   const LeftColumn({super.key});
@@ -14,7 +15,8 @@ class LeftColumn extends StatelessWidget {
       children: [
         CompanyLogo(),
         ScannedFolders(),
-        RecentProjects(),
+        Expanded(child: RecentProjects()),
+        StatusBar(),
       ],
     );
   }

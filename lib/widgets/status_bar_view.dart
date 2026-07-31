@@ -12,42 +12,35 @@ class StatusBar extends StatelessWidget {
       builder: (context, cloningProvider, child) {
         if (!cloningProvider.isCloning) {
           return Container(
-            height: 24,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: const Row(
-              children: [
-                Spacer(),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text('Ready', style: TextStyle(fontSize: 10)),
-                ),
-              ],
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            alignment: Alignment.bottomRight,
+            child: const Text(
+              'Ready',
+              style: TextStyle(fontSize: 10, color: Colors.grey),
             ),
           );
         }
 
         return Container(
-          height: 24,
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Row(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(
-                  'Cloning ${cloningProvider.currentProjectName}: ${cloningProvider.statusMessage}',
-                  style: const TextStyle(fontSize: 10),
-                ),
+              Text(
+                'Cloning ${cloningProvider.currentProjectName}: ${cloningProvider.statusMessage}',
+                style: const TextStyle(fontSize: 10),
+                textAlign: TextAlign.right,
               ),
+              const SizedBox(height: 4),
               SizedBox(
-                width: 100,
-                height: 4,
+                width: double.infinity,
+                height: 2,
                 child: LinearProgressIndicator(
                   value: cloningProvider.progress,
-                  backgroundColor: Colors.white24,
+                  backgroundColor: Colors.white10,
                 ),
               ),
-              const SizedBox(width: 16),
             ],
           ),
         );

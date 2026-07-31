@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'project_locator.dart';
 import 'unreal_project_data.dart';
 
+enum SortField { name, dateCreated, dateModified, engineVersion }
+
 class FoundProjectsData extends ChangeNotifier {
   List<String> scannedFolders = [];
   List<UnrealProjectData> foundProjects = [];
@@ -19,10 +21,8 @@ class FoundProjectsData extends ChangeNotifier {
   bool isScanning = false;
   final ProjectLocator _projectLocator = ProjectLocator();
 
-  bool sortedByName = false;
-  bool sortedByDateCreated = false;
-  bool sortedByDateModified = false;
-  bool sortedByEngineVersion = false;
+  SortField activeSortField = SortField.dateModified;
+  bool sortAscending = false;
 
   static const _fileName = 'projects.json';
 
@@ -124,7 +124,8 @@ class FoundProjectsData extends ChangeNotifier {
     if (await Directory(folderPath).exists()) {
       // Map existing tags to preserve them
       final Map<String, List<String>> existingTagsMap = {
-        for (var p in foundProjects.where((p) => path_pckg.isWithin(folderPath, p.path))) p.path: p.tags,
+        for (var p in foundProjects.where((p) => path_pckg.isWithin(folderPath, p.path)))
+          p.path: p.tags,
       };
 
       // Remove projects that were previously in this folder
@@ -152,17 +153,30 @@ class FoundProjectsData extends ChangeNotifier {
   }
 
   void _applyCurrentSort() {
-    if (sortedByName) {
-      foundProjects.sort((a, b) => a.name.compareTo(b.name));
-    } else if (sortedByDateCreated) {
-      foundProjects.sort((a, b) => a.created.compareTo(b.created));
-    } else if (sortedByDateModified) {
-      foundProjects.sort((a, b) => a.modified.compareTo(b.modified));
-    } else if (sortedByEngineVersion) {
-      foundProjects.sort((a, b) => a.engineVersion.compareTo(b.engineVersion));
-    } else {
-      // Default sort
-      foundProjects.sort((a, b) => b.modified.compareTo(a.modified));
+    switch (activeSortField) {
+      case SortField.name:
+        foundProjects.sort(
+          (a, b) => sortAscending ? a.name.compareTo(b.name) : b.name.compareTo(a.name),
+        );
+        break;
+      case SortField.dateCreated:
+        foundProjects.sort(
+          (a, b) => sortAscending ? a.created.compareTo(b.created) : b.created.compareTo(a.created),
+        );
+        break;
+      case SortField.dateModified:
+        foundProjects.sort(
+          (a, b) =>
+              sortAscending ? a.modified.compareTo(b.modified) : b.modified.compareTo(a.modified),
+        );
+        break;
+      case SortField.engineVersion:
+        foundProjects.sort(
+          (a, b) => sortAscending
+              ? a.engineVersion.compareTo(b.engineVersion)
+              : b.engineVersion.compareTo(a.engineVersion),
+        );
+        break;
     }
   }
 
@@ -208,55 +222,57 @@ class FoundProjectsData extends ChangeNotifier {
   }
 
   void sortProjectsByName() {
-    if (!sortedByName) {
-      foundProjects.sort((a, b) => a.name.compareTo(b.name));
-      sortedByName = true;
+    if (activeSortField == SortField.name) {
+      sortAscending = !sortAscending;
     } else {
-      foundProjects.sort((a, b) => b.name.compareTo(a.name));
-      sortedByName = false;
+      activeSortField = SortField.name;
+      sortAscending = true;
     }
+    _applyCurrentSort();
     _syncFilteredProjects();
   }
 
   void sortProjectsByDateCreated() {
-    if (!sortedByDateCreated) {
-      foundProjects.sort((a, b) => a.created.compareTo(b.created));
-      sortedByDateCreated = true;
+    if (activeSortField == SortField.dateCreated) {
+      sortAscending = !sortAscending;
     } else {
-      foundProjects.sort((a, b) => b.created.compareTo(a.created));
-      sortedByDateCreated = false;
+      activeSortField = SortField.dateCreated;
+      sortAscending = false; // Newest first usually
     }
+    _applyCurrentSort();
     _syncFilteredProjects();
   }
 
   void sortProjectsByDateModified() {
-    if (!sortedByDateModified) {
-      foundProjects.sort((a, b) => a.modified.compareTo(b.modified));
-      sortedByDateModified = true;
+    if (activeSortField == SortField.dateModified) {
+      sortAscending = !sortAscending;
     } else {
-      foundProjects.sort((a, b) => b.modified.compareTo(a.modified));
-      sortedByDateModified = false;
+      activeSortField = SortField.dateModified;
+      sortAscending = false; // Newest first
     }
+    _applyCurrentSort();
     _syncFilteredProjects();
   }
 
   void sortProjectsByEngineVersion() {
-    if (!sortedByEngineVersion) {
-      foundProjects.sort((a, b) => a.engineVersion.compareTo(b.engineVersion));
-      sortedByEngineVersion = true;
+    if (activeSortField == SortField.engineVersion) {
+      sortAscending = !sortAscending;
     } else {
-      foundProjects.sort((a, b) => b.engineVersion.compareTo(a.engineVersion));
-      sortedByEngineVersion = false;
+      activeSortField = SortField.engineVersion;
+      sortAscending = false; // Highest version first
     }
+    _applyCurrentSort();
     _syncFilteredProjects();
   }
 
   void _syncFilteredProjects() {
     filteredProjects = foundProjects.where((project) {
       final matchesSearch =
-          currentSearchQuery.isEmpty || project.name.toLowerCase().contains(currentSearchQuery.toLowerCase());
+          currentSearchQuery.isEmpty ||
+          project.name.toLowerCase().contains(currentSearchQuery.toLowerCase());
 
-      final matchesTags = selectedTags.isEmpty || selectedTags.any((tag) => project.tags.contains(tag));
+      final matchesTags =
+          selectedTags.isEmpty || selectedTags.any((tag) => project.tags.contains(tag));
 
       return matchesSearch && matchesTags;
     }).toList();
@@ -299,6 +315,11 @@ class FoundProjectsData extends ChangeNotifier {
       final updatedTags = List<String>.from(foundProjects[index].tags);
       if (updatedTags.remove(tag)) {
         foundProjects[index] = foundProjects[index].copyWith(tags: updatedTags);
+
+        if (selectedTags.contains(tag)) {
+          selectedTags.clear();
+        }
+
         _syncFilteredProjects();
         saveProjects();
       }

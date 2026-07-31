@@ -21,10 +21,9 @@ Future<void> main() async {
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await windowManager.show();
-        await windowManager.focus();
-      });
+      await windowManager.show();
+      await windowManager.focus();
+      await windowManager.maximize();
     });
   }
 
