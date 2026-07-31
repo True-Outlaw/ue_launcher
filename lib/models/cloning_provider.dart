@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 import 'found_projects_data.dart';
@@ -13,8 +11,11 @@ class CloningProvider extends ChangeNotifier {
   double _progress = 0;
 
   bool get isCloning => _isCloning;
+
   String get currentProjectName => _currentProjectName;
+
   String get statusMessage => _statusMessage;
+
   double get progress => _progress;
 
   final ProjectCloner _projectCloner = ProjectCloner();

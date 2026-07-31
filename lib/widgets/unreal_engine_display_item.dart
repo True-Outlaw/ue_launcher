@@ -43,6 +43,7 @@ class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
         Opacity(
           opacity: isLaunchable ? 1.0 : 0.5,
           child: Container(
+            width: 240,
             height: 106,
             padding: const EdgeInsets.all(12.0),
             margin: const EdgeInsets.all(8.0),

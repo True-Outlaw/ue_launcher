@@ -1,0 +1,5 @@
+- [x] Refactor `InstallNewEngineItem` in `installed_engines_view.dart`
+    - [x] Wrap in `Stack` to match `UnrealEngineDisplayItem`
+    - [x] Synchronize height (106), margin (8.0), and padding (12.0)
+    - [x] Update internal layout to match screenshot (centered Icon + Text)
+- [x] Verify alignment between engine items and "Install New" button

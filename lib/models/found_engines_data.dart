@@ -4,13 +4,29 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ue_launcher/models/engine_locator.dart';
+import 'package:ue_launcher/models/engine_update_service.dart';
 import 'package:ue_launcher/models/unreal_engine_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FoundEnginesData extends ChangeNotifier {
   List<UnrealEngineInfo> foundEngines = [];
   bool isLoading = false;
+  String? latestAvailableVersion;
 
   final EngineLocator engineLocator = EngineLocator();
+  final EngineUpdateService _updateService = EngineUpdateService();
+
+  bool get isUpdateAvailable {
+    if (latestAvailableVersion == null || foundEngines.isEmpty) return false;
+
+    // Find the highest installed version
+    String highestInstalled = foundEngines.map((e) => e.version).reduce((a, b) {
+      return UnrealEngineInfo.compareVersions(a, b) >= 0 ? a : b;
+    });
+
+    // Check if latest available is strictly greater than highest installed
+    return UnrealEngineInfo.compareVersions(latestAvailableVersion!, highestInstalled) > 0;
+  }
 
   static const _fileName = 'engines.json';
 
@@ -67,6 +83,34 @@ class FoundEnginesData extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+
+    // Check for updates after loading local engines
+    checkForUpdates();
+  }
+
+  Future<void> checkForUpdates() async {
+    final version = await _updateService.fetchLatestVersion();
+    if (version != null) {
+      latestAvailableVersion = version;
+      notifyListeners();
+    }
+  }
+
+  Future<void> triggerEngineInstallation(String version) async {
+    final String uriString = version.isEmpty
+        ? 'com.epicgames.launcher://ue/library'
+        : 'com.epicgames.launcher://apps/UE_$version?action=installer';
+    final Uri uri = Uri.parse(uriString);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      // Fallback: just open the library if specific version install fails
+      final Uri libraryUri = Uri.parse('com.epicgames.launcher://ue/library');
+      if (await canLaunchUrl(libraryUri)) {
+        await launchUrl(libraryUri);
+      }
+    }
   }
 
   Future<void> manuallyAddEngine() async {
