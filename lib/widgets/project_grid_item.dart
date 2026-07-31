@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_pckg;
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../custom_widgets/image_with_version_overlay.dart';
+import '../models/cloning_provider.dart';
 import '../models/found_projects_data.dart';
 import '../models/unreal_project_data.dart';
 
@@ -77,8 +79,106 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
     }
   }
 
+  Future<void> _showCloneDialog(BuildContext context) async {
+    final TextEditingController nameController = TextEditingController(text: '${widget.projectData.name}_Clone');
+    final String initialPath = File(widget.projectData.path).parent.parent.path;
+    final TextEditingController pathController = TextEditingController(text: initialPath);
+    final formKey = GlobalKey<FormState>();
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Clone Project: ${widget.projectData.name}'),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'New Project Name',
+                        hintText: 'Enter name for the clone',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: pathController,
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Target Directory',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.folder_open),
+                          onPressed: () async {
+                            String? selectedDirectory = await FilePicker.platform.getDirectoryPath(
+                              initialDirectory: initialPath,
+                            );
+                            if (selectedDirectory != null) {
+                              setDialogState(() {
+                                pathController.text = selectedDirectory;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final newName = nameController.text.trim();
+                      final targetPath = pathController.text.trim();
+                      Navigator.pop(context); // Close dialog
+                      await _performClone(context, newName, targetPath);
+                    }
+                  },
+                  child: const Text('Clone'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _performClone(BuildContext context, String newName, String targetPath) async {
+    final cloningProvider = Provider.of<CloningProvider>(context, listen: false);
+    final projectsData = Provider.of<FoundProjectsData>(context, listen: false);
+
+    cloningProvider.startClone(widget.projectData, newName, targetPath, projectsData);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Cloning "$newName" started in the background.')),
+    );
+  }
+
   void showContextMenu(BuildContext context, TapUpDetails details) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final cloningProvider = Provider.of<CloningProvider>(context, listen: false);
 
     showMenu<String>(
       context: context,
@@ -97,12 +197,17 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
             ],
           ),
         ),
-        // You can add more options here
-        // const PopupMenuDivider(),
-        // const PopupMenuItem<String>(
-        //   value: 'other_action',
-        //   child: Text('Other Action'),
-        // ),
+        PopupMenuItem<String>(
+          value: 'clone',
+          enabled: !cloningProvider.isCloning,
+          child: Row(
+            children: [
+              const Icon(Icons.copy, size: 20),
+              const SizedBox(width: 8),
+              Text(cloningProvider.isCloning ? 'Cloning in progress...' : 'Clone Project'),
+            ],
+          ),
+        ),
       ],
       elevation: 8.0,
     ).then<void>((String? selectedValue) {
@@ -114,11 +219,11 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
         if (context.mounted) {
           openProjectInFileExplorer(context, widget.projectData.path);
         }
+      } else if (selectedValue == 'clone') {
+        if (context.mounted) {
+          _showCloneDialog(context);
+        }
       }
-      // Handle other actions
-      // else if (selectedValue == 'other_action') {
-      //   print('Other action selected for ${projectData.name}');
-      // }
     });
   }
 

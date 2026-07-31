@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'left_column_view.dart';
 import 'right_column_view.dart';
+import 'status_bar_view.dart';
 
 class UELauncher extends StatelessWidget {
   const UELauncher({super.key});
@@ -12,18 +13,25 @@ class UELauncher extends StatelessWidget {
       theme: ThemeData.dark().copyWith(),
       home: Scaffold(
         body: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
+          child: Column(
+            children: [
               Expanded(
-                flex: 1,
-                child: LeftColumn(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: LeftColumn(),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: RightColumn(),
+                    ),
+                  ],
+                ),
               ),
-              Expanded(
-                flex: 4,
-                child: RightColumn(),
-              ),
+              const StatusBar(),
             ],
           ),
         ),

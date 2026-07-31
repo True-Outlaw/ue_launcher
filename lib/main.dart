@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:ue_launcher/models/found_engines_data.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'models/cloning_provider.dart';
 import 'models/found_projects_data.dart';
 import 'widgets/ue_launcher.dart';
 
@@ -32,6 +33,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => FoundProjectsData()),
         ChangeNotifierProvider(create: (context) => FoundEnginesData()),
+        ChangeNotifierProvider(create: (context) => CloningProvider()),
       ],
       child: UELauncher(),
     ),
