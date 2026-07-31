@@ -1,5 +1,15 @@
-- [x] Refactor `InstallNewEngineItem` in `installed_engines_view.dart`
-    - [x] Wrap in `Stack` to match `UnrealEngineDisplayItem`
-    - [x] Synchronize height (106), margin (8.0), and padding (12.0)
-    - [x] Update internal layout to match screenshot (centered Icon + Text)
-- [x] Verify alignment between engine items and "Install New" button
+- [x] Update `UnrealProjectData` model
+    - [x] Add `tags` field and `copyWith` method
+    - [x] Update JSON and File parsing logic
+- [x] Update `FoundProjectsData` provider
+    - [x] Add `selectedTags` for filtering
+    - [x] Update `loadProjects`/`saveProjects` to persist tags
+    - [x] Implement `toggleTagFilter`, `addTagToProject`, `removeTagFromProject`
+    - [x] Update `_syncFilteredProjects` to include tag filtering
+    - [x] Update rescan logic to preserve tags based on path
+- [x] Implement Tag Management UI
+    - [x] Create `TagEditorDialog`
+    - [x] Add tag management to `ProjectGridItem`
+- [x] Implement Filtering UI
+    - [x] Add `FilterChip` section to `FilterColumn`
+- [x] Verify functionality and persistence

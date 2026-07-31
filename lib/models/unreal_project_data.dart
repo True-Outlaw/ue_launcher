@@ -11,6 +11,7 @@ class UnrealProjectData {
   final DateTime created;
   final DateTime modified;
   final String? thumbnailPath;
+  final List<String> tags;
 
   UnrealProjectData({
     required this.path,
@@ -19,6 +20,7 @@ class UnrealProjectData {
     required this.created,
     required this.modified,
     this.thumbnailPath,
+    this.tags = const [],
   });
 
   static Future<UnrealProjectData?> fromFile(File file) async {
@@ -50,6 +52,7 @@ class UnrealProjectData {
         created: stat.changed,
         modified: stat.modified,
         thumbnailPath: thumbnail.isNotEmpty ? thumbnail : null,
+        tags: [],
       );
     } catch (e) {
       if (kDebugMode) {
@@ -67,6 +70,7 @@ class UnrealProjectData {
       modified: DateTime.parse(json['modified']),
       engineVersion: json['engineVersion'],
       thumbnailPath: json['thumbnailPath'],
+      tags: List<String>.from(json['tags'] ?? []),
     );
   }
 
@@ -77,7 +81,28 @@ class UnrealProjectData {
     'modified': modified.toIso8601String(),
     'engineVersion': engineVersion,
     'thumbnailPath': thumbnailPath,
+    'tags': tags,
   };
+
+  UnrealProjectData copyWith({
+    String? path,
+    String? name,
+    String? engineVersion,
+    DateTime? created,
+    DateTime? modified,
+    String? thumbnailPath,
+    List<String>? tags,
+  }) {
+    return UnrealProjectData(
+      path: path ?? this.path,
+      name: name ?? this.name,
+      engineVersion: engineVersion ?? this.engineVersion,
+      created: created ?? this.created,
+      modified: modified ?? this.modified,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      tags: tags ?? this.tags,
+    );
+  }
 
   // Optional: for quick lookup
   @override

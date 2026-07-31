@@ -25,7 +25,7 @@ Some ideas for future development:
 - [x] A "Recent Projects" side panel
 - [ ] Add custom tags to projects for better filtering
 - [x] Cloning projects to a new directory
-- [ ] Installing and updating new engine versions
+- [X] Installing and updating new engine versions
 - [ ] A Fab Library window
 - [ ] The ability to manage the local Asset Vault
 

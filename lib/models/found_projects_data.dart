@@ -14,6 +14,7 @@ class FoundProjectsData extends ChangeNotifier {
   List<UnrealProjectData> filteredProjects = [];
   List<String> recentProjectPaths = [];
   String currentSearchQuery = '';
+  List<String> selectedTags = [];
 
   bool isScanning = false;
   final ProjectLocator _projectLocator = ProjectLocator();
@@ -98,8 +99,13 @@ class FoundProjectsData extends ChangeNotifier {
     }
 
     // Update foundProjects: Keep only what's still there, and add new ones
-    // We want to preserve state if possible, but UnrealProjectData doesn't have much mutable state yet.
-    // For now, let's just replace the list but keep the current sort.
+    // Merge tags from existing projects
+    for (int i = 0; i < allFound.length; i++) {
+      final existingProjectIndex = foundProjects.indexWhere((p) => p.path == allFound[i].path);
+      if (existingProjectIndex != -1) {
+        allFound[i] = allFound[i].copyWith(tags: foundProjects[existingProjectIndex].tags);
+      }
+    }
 
     foundProjects = allFound;
     _applyCurrentSort();
@@ -116,11 +122,24 @@ class FoundProjectsData extends ChangeNotifier {
     notifyListeners();
 
     if (await Directory(folderPath).exists()) {
+      // Map existing tags to preserve them
+      final Map<String, List<String>> existingTagsMap = {
+        for (var p in foundProjects.where((p) => path_pckg.isWithin(folderPath, p.path))) p.path: p.tags,
+      };
+
       // Remove projects that were previously in this folder
       foundProjects.removeWhere((p) => path_pckg.isWithin(folderPath, p.path));
 
       // Scan for projects in this folder
       final newProjects = await _projectLocator.scanForUProjects(folderPath);
+
+      // Restore tags
+      for (int i = 0; i < newProjects.length; i++) {
+        if (existingTagsMap.containsKey(newProjects[i].path)) {
+          newProjects[i] = newProjects[i].copyWith(tags: existingTagsMap[newProjects[i].path]);
+        }
+      }
+
       foundProjects.addAll(newProjects);
 
       _applyCurrentSort();
@@ -233,13 +252,56 @@ class FoundProjectsData extends ChangeNotifier {
   }
 
   void _syncFilteredProjects() {
-    if (currentSearchQuery.isEmpty) {
-      filteredProjects = List.from(foundProjects);
-    } else {
-      filteredProjects = foundProjects.where((project) {
-        return project.name.toLowerCase().contains(currentSearchQuery.toLowerCase());
-      }).toList();
-    }
+    filteredProjects = foundProjects.where((project) {
+      final matchesSearch =
+          currentSearchQuery.isEmpty || project.name.toLowerCase().contains(currentSearchQuery.toLowerCase());
+
+      final matchesTags = selectedTags.isEmpty || selectedTags.any((tag) => project.tags.contains(tag));
+
+      return matchesSearch && matchesTags;
+    }).toList();
     notifyListeners();
+  }
+
+  List<String> get allUniqueTags {
+    final tags = <String>{};
+    for (var project in foundProjects) {
+      tags.addAll(project.tags);
+    }
+    return tags.toList()..sort();
+  }
+
+  void toggleTagFilter(String tag) {
+    if (selectedTags.contains(tag)) {
+      selectedTags.remove(tag);
+    } else {
+      selectedTags.add(tag);
+    }
+    _syncFilteredProjects();
+  }
+
+  void addTagToProject(UnrealProjectData project, String tag) {
+    final index = foundProjects.indexWhere((p) => p.path == project.path);
+    if (index != -1) {
+      final updatedTags = List<String>.from(foundProjects[index].tags);
+      if (!updatedTags.contains(tag)) {
+        updatedTags.add(tag);
+        foundProjects[index] = foundProjects[index].copyWith(tags: updatedTags);
+        _syncFilteredProjects();
+        saveProjects();
+      }
+    }
+  }
+
+  void removeTagFromProject(UnrealProjectData project, String tag) {
+    final index = foundProjects.indexWhere((p) => p.path == project.path);
+    if (index != -1) {
+      final updatedTags = List<String>.from(foundProjects[index].tags);
+      if (updatedTags.remove(tag)) {
+        foundProjects[index] = foundProjects[index].copyWith(tags: updatedTags);
+        _syncFilteredProjects();
+        saveProjects();
+      }
+    }
   }
 }

@@ -11,6 +11,7 @@ import '../custom_widgets/image_with_version_overlay.dart';
 import '../models/cloning_provider.dart';
 import '../models/found_projects_data.dart';
 import '../models/unreal_project_data.dart';
+import 'tag_editor_dialog.dart';
 
 class ProjectGridItem extends StatefulWidget {
   final UnrealProjectData projectData;
@@ -208,6 +209,16 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
             ],
           ),
         ),
+        PopupMenuItem<String>(
+          value: 'manage_tags',
+          child: Row(
+            children: const [
+              Icon(Icons.label_outline, size: 20),
+              SizedBox(width: 8),
+              Text('Manage Tags'),
+            ],
+          ),
+        ),
       ],
       elevation: 8.0,
     ).then<void>((String? selectedValue) {
@@ -222,6 +233,13 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
       } else if (selectedValue == 'clone') {
         if (context.mounted) {
           _showCloneDialog(context);
+        }
+      } else if (selectedValue == 'manage_tags') {
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => TagEditorDialog(project: widget.projectData),
+          );
         }
       }
     });
@@ -307,6 +325,28 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (widget.projectData.tags.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 2,
+                        alignment: WrapAlignment.center,
+                        children: widget.projectData.tags.take(3).map((tag) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              tag,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                 ],
               ),
             ),

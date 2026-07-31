@@ -83,6 +83,34 @@ class _FilterColumnState extends State<FilterColumn> {
               },
             ),
           ),
+          const SizedBox(height: 16),
+          Text(
+            'Tags',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Consumer<FoundProjectsData>(
+            builder: (context, data, child) {
+              final allTags = data.allUniqueTags;
+              if (allTags.isEmpty) {
+                return const Text('No tags assigned yet.', style: TextStyle(fontStyle: FontStyle.italic));
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: allTags.map((tag) {
+                  final isSelected = data.selectedTags.contains(tag);
+                  return FilterChip(
+                    label: Text(tag),
+                    selected: isSelected,
+                    onSelected: (bool value) {
+                      data.toggleTagFilter(tag);
+                    },
+                  );
+                }).toList(),
+              );
+            },
+          ),
         ],
       ),
     );
