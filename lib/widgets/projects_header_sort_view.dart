@@ -132,7 +132,7 @@ class _ProjectsHeaderAndSortState extends State<ProjectsHeaderAndSort> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
                         child: Text(
                           'Filters',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
