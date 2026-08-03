@@ -1,0 +1,29 @@
+# Refactoring UELauncher Task List
+
+- [x] **Infrastructure & Structure**
+    - [x] Create folder structure for Clean Architecture (`core`, `features/projects`, `features/engines`)
+- [x] **Domain Layer (Entities & Repository Interfaces)**
+    - [x] Refactor `UnrealProjectData` to `lib/features/projects/domain/entities/project.dart`
+    - [x] Refactor `UnrealEngineInfo` to `lib/features/engines/domain/entities/engine.dart`
+    - [x] Create `ProjectRepository` interface
+    - [x] Create `EngineRepository` interface
+- [x] **Data Layer (DataSources & Repository Implementations)**
+    - [x] Implement `LocalProjectDataSource`
+    - [x] Implement `ProjectRepositoryImpl`
+    - [x] Implement `LocalEngineDataSource` (platform-specific logic)
+    - [x] Implement `EngineRepositoryImpl`
+- [x] **Domain Layer (UseCases)**
+    - [x] Create `ScanProjectsUseCase`
+    - [x] Create `CloneProjectUseCase`
+    - [x] Create `DetectEnginesUseCase`
+    - [x] Create `CheckEngineUpdatesUseCase`
+- [x] **Presentation Layer (ViewModels/Providers)**
+    - [x] Refactor `FoundProjectsData` to `ProjectsProvider` (using UseCases)
+    - [x] Refactor `FoundEnginesData` to `EnginesProvider` (using UseCases)
+    - [x] Refactor `CloningProvider` to use `CloneProjectUseCase`
+- [x] **UI Refactor**
+    - [x] Move widgets to respective `features/*/presentation/widgets` folders
+    - [x] Update imports across the project
+- [x] **Cleanup & Verification**
+    - [x] Remove old `models/` and `widgets/` folders
+    - [x] Verify build and functionality

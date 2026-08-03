@@ -2,19 +2,21 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ue_launcher/models/found_engines_data.dart';
+import 'package:ue_launcher/core/di.dart';
+import 'package:ue_launcher/features/engines/presentation/providers/engines_provider.dart';
+import 'package:ue_launcher/features/projects/presentation/providers/cloning_provider.dart';
+import 'package:ue_launcher/features/projects/presentation/providers/projects_provider.dart';
+import 'package:ue_launcher/presentation/widgets/ue_launcher.dart';
 import 'package:window_manager/window_manager.dart';
-
-import 'models/cloning_provider.dart';
-import 'models/found_projects_data.dart';
-import 'widgets/ue_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
 
+  DI.init();
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    WindowOptions windowOptions = WindowOptions(
+    WindowOptions windowOptions = const WindowOptions(
       minimumSize: Size(1280, 800),
       size: Size(1280, 800),
       center: true,
@@ -30,11 +32,11 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => FoundProjectsData()),
-        ChangeNotifierProvider(create: (context) => FoundEnginesData()),
+        ChangeNotifierProvider(create: (context) => ProjectsProvider()),
+        ChangeNotifierProvider(create: (context) => EnginesProvider()),
         ChangeNotifierProvider(create: (context) => CloningProvider()),
       ],
-      child: UELauncher(),
+      child: const UELauncher(),
     ),
   );
 }

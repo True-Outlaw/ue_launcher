@@ -23,7 +23,7 @@ for.
 Some ideas for future development:
 
 - [x] A "Recent Projects" side panel
-- [ ] Add custom tags to projects for better filtering
+- [x] Add custom tags to projects for better filtering
 - [x] Cloning projects to a new directory
 - [X] Installing and updating new engine versions
 - [ ] A Fab Library window
