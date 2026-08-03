@@ -26,12 +26,12 @@ dependencies:
     sdk: flutter
   path: ^1.9.1
   path_provider: ^2.1.5
-  file_picker: ^12.0.0-beta.7
+  file_picker: ^10.3.10
   cupertino_icons: ^1.0.8
   window_manager: ^0.5.1
   provider: ^6.1.5
   url_launcher: ^6.3.2
-  win32: ^6.3.0
+  win32: ^5.15.0
   ffi: ^2.1.4
   flutter_svg: ^2.2.0
   http: ^1.2.1
@@ -92,3 +92,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+msix_config:
+  display_name: UE Launcher
+  publisher_display_name: True Outlaw
+  identity_name: com.trueoutlaw.uelauncher
+  publisher: CN=TrueOutlaw, O=TrueOutlaw, L=Stockholm, C=SE
+  logo_path: images/UE-Icon-2023-White.png
+  capabilities: runFullTrust
