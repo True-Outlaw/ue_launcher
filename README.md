@@ -24,10 +24,13 @@ Some ideas for future development:
 
 - [x] A "Recent Projects" side panel
 - [x] Add custom tags to projects for better filtering
-- [x] Cloning projects to a new directory
-- [X] Installing and updating new engine versions
-- [ ] A Fab Library window
-- [ ] The ability to manage the local Asset Vault
+- [x] Cloning projects to a new directory (with Plugins support)
+- [x] Installing and updating new engine versions
+- [x] Multi-drive engine auto-discovery (Windows Registry & Epic Manifests)
+- [x] Switching project engine version
+- [x] Project cache cleaner (nuke Intermediate, Saved, DerivedDataCache)
+- [x] Generate IDE / Visual Studio project files
+- [x] Local Asset Vault & Fab Cache management tab
 
 ## How to use
 

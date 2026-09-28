@@ -20,7 +20,7 @@ class CloneProjectUseCase {
     onProgress?.call('Creating directory...', 0.1);
     await targetDir.create(recursive: true);
 
-    final essentialFolders = ['Config', 'Content', 'Source'];
+    final essentialFolders = ['Config', 'Content', 'Source', 'Plugins'];
     double progress = 0.2;
     final stepSize = 0.6 / essentialFolders.length;
 
@@ -57,13 +57,17 @@ class CloneProjectUseCase {
   }
 
   Future<void> _copyDirectory(Directory source, Directory destination) async {
+    const ignoredSubdirs = {'intermediate', 'binaries'};
     await destination.create(recursive: true);
     await for (final entity in source.list(recursive: false)) {
+      final baseName = path_pckg.basename(entity.path);
       if (entity is Directory) {
-        final newDirectory = Directory(path_pckg.join(destination.absolute.path, path_pckg.basename(entity.path)));
-        await _copyDirectory(entity, newDirectory);
+        if (!ignoredSubdirs.contains(baseName.toLowerCase())) {
+          final newDirectory = Directory(path_pckg.join(destination.absolute.path, baseName));
+          await _copyDirectory(entity, newDirectory);
+        }
       } else if (entity is File) {
-        await entity.copy(path_pckg.join(destination.path, path_pckg.basename(entity.path)));
+        await entity.copy(path_pckg.join(destination.path, baseName));
       }
     }
   }

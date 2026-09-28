@@ -6,6 +6,7 @@ import 'package:ue_launcher/core/di.dart';
 import 'package:ue_launcher/features/engines/presentation/providers/engines_provider.dart';
 import 'package:ue_launcher/features/projects/presentation/providers/cloning_provider.dart';
 import 'package:ue_launcher/features/projects/presentation/providers/projects_provider.dart';
+import 'package:ue_launcher/features/vault/presentation/providers/vault_provider.dart';
 import 'package:ue_launcher/presentation/widgets/ue_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -35,6 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ProjectsProvider()),
         ChangeNotifierProvider(create: (context) => EnginesProvider()),
         ChangeNotifierProvider(create: (context) => CloningProvider()),
+        ChangeNotifierProvider(create: (context) => VaultProvider()),
       ],
       child: const UELauncher(),
     ),

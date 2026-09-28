@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_pckg;
 import 'package:provider/provider.dart';
 import 'package:ue_launcher/core/widgets/image_with_version_overlay.dart';
+import 'package:ue_launcher/features/engines/presentation/providers/engines_provider.dart';
 import 'package:ue_launcher/features/projects/domain/entities/project.dart';
 import 'package:ue_launcher/features/projects/presentation/providers/cloning_provider.dart';
 import 'package:ue_launcher/features/projects/presentation/providers/projects_provider.dart';
@@ -25,12 +26,33 @@ class ProjectGridItem extends StatefulWidget {
 }
 
 class _ProjectGridItemState extends State<ProjectGridItem> {
-  Future<void> openProject(BuildContext context, Project project) async {
+  Future<void> openProject(BuildContext context, Project project, {List<String> args = const []}) async {
+    final enginesProvider = Provider.of<EnginesProvider>(context, listen: false);
+    final matchingEngine = enginesProvider.foundEngines.where(
+      (e) => e.version == project.engineVersion && e.isLaunchable,
+    ).firstOrNull;
+
+    if (context.mounted) {
+      Provider.of<ProjectsProvider>(context, listen: false).recordProjectLaunch(project);
+    }
+
+    if (matchingEngine != null) {
+      try {
+        final engineFile = File(matchingEngine.executablePath);
+        if (await engineFile.exists()) {
+          await Process.start(
+            matchingEngine.executablePath,
+            [project.path, ...args],
+            mode: ProcessStartMode.detached,
+            workingDirectory: engineFile.parent.path,
+          );
+          return;
+        }
+      } catch (_) {}
+    }
+
     final Uri projectFileUri = Uri.file(project.path);
     if (await canLaunchUrl(projectFileUri)) {
-      if (context.mounted) {
-        Provider.of<ProjectsProvider>(context, listen: false).recordProjectLaunch(project);
-      }
       await launchUrl(projectFileUri);
     } else {
       if (context.mounted) {
@@ -59,6 +81,217 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
         );
       }
     }
+  }
+
+  Future<void> _showLaunchArgsDialog(BuildContext context) async {
+    final controller = TextEditingController(text: '-log');
+    final commonFlags = ['-log', '-game', '-dx12', '-vulkan', '-nullrhi'];
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text('Launch ${widget.project.name} with Arguments'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: 'Command-line arguments',
+                  hintText: '-log -game',
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 6,
+                children: commonFlags.map((flag) {
+                  return ActionChip(
+                    label: Text(flag, style: const TextStyle(fontSize: 11)),
+                    onPressed: () {
+                      final current = controller.text.trim();
+                      if (!current.contains(flag)) {
+                        setDialogState(() {
+                          controller.text = current.isEmpty ? flag : '$current $flag';
+                        });
+                      }
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () {
+                final text = controller.text.trim();
+                final args = text.isEmpty ? <String>[] : text.split(' ').where((s) => s.isNotEmpty).toList();
+                Navigator.pop(ctx);
+                openProject(context, widget.project, args: args);
+              },
+              child: const Text('Launch'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showSwitchEngineDialog(BuildContext context) async {
+    final engines = Provider.of<EnginesProvider>(context, listen: false).foundEngines;
+    String selectedVersion = widget.project.engineVersion;
+    final customController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text('Switch Engine Version: ${widget.project.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Select installed engine version:'),
+              const SizedBox(height: 8),
+              if (engines.isEmpty)
+                const Text('No installed engines detected.', style: TextStyle(color: Colors.grey))
+              else
+                DropdownButton<String>(
+                  isExpanded: true,
+                  value: engines.any((e) => e.version == selectedVersion) ? selectedVersion : null,
+                  hint: Text(selectedVersion),
+                  items: engines.map((e) {
+                    return DropdownMenuItem<String>(
+                      value: e.version,
+                      child: Text('Unreal Engine ${e.version}'),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      setDialogState(() {
+                        selectedVersion = val;
+                        customController.clear();
+                      });
+                    }
+                  },
+                ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: customController,
+                decoration: const InputDecoration(
+                  labelText: 'Or enter custom engine version / GUID',
+                ),
+                onChanged: (val) {
+                  if (val.trim().isNotEmpty) {
+                    setDialogState(() {
+                      selectedVersion = val.trim();
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final target = customController.text.trim().isNotEmpty ? customController.text.trim() : selectedVersion;
+                await Provider.of<ProjectsProvider>(context, listen: false).switchEngineAssociation(
+                  widget.project,
+                  target,
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Switched "${widget.project.name}" to UE $target')),
+                  );
+                }
+              },
+              child: const Text('Switch'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCleanCacheDialog(BuildContext context) async {
+    final projectsProvider = Provider.of<ProjectsProvider>(context, listen: false);
+    int estimatedBytes = 0;
+    bool isEstimating = true;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          if (isEstimating) {
+            projectsProvider.estimateProjectCacheSize(widget.project).then((bytes) {
+              if (ctx.mounted) {
+                setDialogState(() {
+                  estimatedBytes = bytes;
+                  isEstimating = false;
+                });
+              }
+            });
+          }
+
+          final sizeMb = (estimatedBytes / (1024 * 1024)).toStringAsFixed(1);
+          final sizeGb = (estimatedBytes / (1024 * 1024 * 1024)).toStringAsFixed(2);
+          final formattedSize = estimatedBytes > 1024 * 1024 * 1024 ? '$sizeGb GB' : '$sizeMb MB';
+
+          return AlertDialog(
+            title: Text('Clean Project Cache: ${widget.project.name}'),
+            content: isEstimating
+                ? const SizedBox(
+                    height: 80,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 8),
+                          Text('Estimating cache size...', style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Estimated cleanable size: $formattedSize', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'This will delete Intermediate, Saved, DerivedDataCache, and Binaries folders to reclaim disk space. Unreal Engine will regenerate needed files on next build/launch.',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                onPressed: isEstimating
+                    ? null
+                    : () async {
+                        Navigator.pop(ctx);
+                        final freed = await projectsProvider.cleanProjectCache(widget.project);
+                        final freedMb = (freed / (1024 * 1024)).toStringAsFixed(1);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Cleaned cache for "${widget.project.name}". Freed $freedMb MB!')),
+                          );
+                        }
+                      },
+                child: const Text('Clean Cache'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _showCloneDialog(BuildContext context) async {
@@ -149,6 +382,22 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
           value: 'open_in_explorer',
           child: Row(children: [Icon(Icons.folder_open, size: 20), SizedBox(width: 8), Text('Open in File Explorer')]),
         ),
+        const PopupMenuItem(
+          value: 'launch_args',
+          child: Row(children: [Icon(Icons.play_arrow_outlined, size: 20), SizedBox(width: 8), Text('Launch with Arguments...')]),
+        ),
+        const PopupMenuItem(
+          value: 'switch_engine',
+          child: Row(children: [Icon(Icons.swap_horiz, size: 20), SizedBox(width: 8), Text('Switch Engine Version...')]),
+        ),
+        const PopupMenuItem(
+          value: 'clean_cache',
+          child: Row(children: [Icon(Icons.cleaning_services_outlined, size: 20), SizedBox(width: 8), Text('Clean Project Cache...')]),
+        ),
+        const PopupMenuItem(
+          value: 'generate_files',
+          child: Row(children: [Icon(Icons.code, size: 20), SizedBox(width: 8), Text('Generate IDE Project Files')]),
+        ),
         PopupMenuItem(
           value: 'clone',
           enabled: !cloningProvider.isCloning,
@@ -165,11 +414,34 @@ class _ProjectGridItemState extends State<ProjectGridItem> {
           child: Row(children: [Icon(Icons.label_outline, size: 20), SizedBox(width: 8), Text('Manage Tags')]),
         ),
       ],
-    ).then((selectedValue) {
+    ).then((selectedValue) async {
       if (!context.mounted || selectedValue == null) return;
 
       if (selectedValue == 'open_in_explorer') {
         openProjectInFileExplorer(context, widget.project.path);
+      } else if (selectedValue == 'launch_args') {
+        _showLaunchArgsDialog(context);
+      } else if (selectedValue == 'switch_engine') {
+        _showSwitchEngineDialog(context);
+      } else if (selectedValue == 'clean_cache') {
+        _showCleanCacheDialog(context);
+      } else if (selectedValue == 'generate_files') {
+        final enginesProvider = Provider.of<EnginesProvider>(context, listen: false);
+        final matchingEngine = enginesProvider.foundEngines.where((e) => e.version == widget.project.engineVersion).firstOrNull;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Generating project files...')),
+        );
+        final success = await Provider.of<ProjectsProvider>(context, listen: false).generateProjectFiles(
+          widget.project,
+          enginePath: matchingEngine?.path,
+        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(success ? 'IDE Project files generated successfully!' : 'Failed to generate project files. Ensure UnrealVersionSelector is installed.'),
+            ),
+          );
+        }
       } else if (selectedValue == 'clone') {
         _showCloneDialog(context);
       } else if (selectedValue == 'manage_tags') {

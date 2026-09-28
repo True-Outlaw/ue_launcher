@@ -43,6 +43,19 @@ class LocalProjectDataSource implements ProjectDataSource {
     }
   }
 
+  static const Set<String> _ignoredDirectories = {
+    '.git',
+    '.svn',
+    '.vs',
+    '.idea',
+    'node_modules',
+    'intermediate',
+    'saved',
+    'deriveddatacache',
+    'binaries',
+    'build',
+  };
+
   @override
   Future<List<ProjectModel>> scanForUProjects(String folder) async {
     final projects = <ProjectModel>[];
@@ -70,7 +83,10 @@ class LocalProjectDataSource implements ProjectDataSource {
 
         for (final entity in entities) {
           if (entity is Directory) {
-            await scanDirectory(entity);
+            final dirName = path_pckg.basename(entity.path).toLowerCase();
+            if (!_ignoredDirectories.contains(dirName)) {
+              await scanDirectory(entity);
+            }
           }
         }
       } catch (e) {

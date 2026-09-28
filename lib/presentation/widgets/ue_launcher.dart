@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:ue_launcher/core/theme/ue_theme.dart';
 import 'left_column_view.dart';
 import 'right_column_view.dart';
 
@@ -9,7 +9,8 @@ class UELauncher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(),
+      debugShowCheckedModeBanner: false,
+      theme: UETheme.darkTheme,
       home: Scaffold(
         body: SafeArea(
           child: Column(

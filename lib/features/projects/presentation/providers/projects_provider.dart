@@ -219,4 +219,29 @@ class ProjectsProvider extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> switchEngineAssociation(Project project, String newEngineVersion) async {
+    final updated = await DI.switchEngineAssociationUseCase(project, newEngineVersion);
+    final index = foundProjects.indexWhere((p) => p.path == project.path);
+    if (index != -1) {
+      foundProjects[index] = updated;
+      _applyCurrentSort();
+      _syncFilteredProjects();
+      saveProjects();
+      notifyListeners();
+    }
+  }
+
+  Future<int> estimateProjectCacheSize(Project project) async {
+    return await DI.cleanProjectCacheUseCase.estimateCacheSize(project);
+  }
+
+  Future<int> cleanProjectCache(Project project) async {
+    final result = await DI.cleanProjectCacheUseCase(project);
+    return result.bytesFreed;
+  }
+
+  Future<bool> generateProjectFiles(Project project, {String? enginePath}) async {
+    return await DI.generateProjectFilesUseCase(project, enginePath: enginePath);
+  }
 }

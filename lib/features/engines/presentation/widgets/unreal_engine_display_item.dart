@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ue_launcher/features/engines/domain/entities/engine.dart';
@@ -18,6 +19,19 @@ class UnrealEngineDisplayItem extends StatefulWidget {
 
 class _UnrealEngineDisplayItemState extends State<UnrealEngineDisplayItem> {
   Future<void> openEngine(BuildContext context, String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await Process.start(
+          path,
+          [],
+          mode: ProcessStartMode.detached,
+          workingDirectory: file.parent.path,
+        );
+        return;
+      }
+    } catch (_) {}
+
     final Uri engineUri = Uri.file(path);
     if (await canLaunchUrl(engineUri)) {
       await launchUrl(engineUri);
