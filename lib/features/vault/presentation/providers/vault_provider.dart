@@ -6,6 +6,7 @@ class VaultProvider extends ChangeNotifier {
   List<VaultAsset> _assets = [];
   List<VaultAsset> _filteredAssets = [];
   bool _isLoading = false;
+  bool hasLoaded = false;
   String _searchQuery = '';
 
   List<VaultAsset> get assets => _filteredAssets;
@@ -27,13 +28,15 @@ class VaultProvider extends ChangeNotifier {
 
   String get vaultPath => DI.vaultRepository.getDefaultVaultPath();
 
-  Future<void> loadVault() async {
+  Future<void> loadVault({bool forceRefresh = false}) async {
+    if (hasLoaded && !forceRefresh) return;
     _isLoading = true;
     notifyListeners();
 
     try {
       _assets = await DI.getVaultAssetsUseCase();
       _filter();
+      hasLoaded = true;
     } catch (e) {
       if (kDebugMode) print('Failed to load vault assets: $e');
     } finally {

@@ -14,11 +14,15 @@ class ProjectsProvider extends ChangeNotifier {
   List<String> selectedTags = [];
 
   bool isScanning = false;
+  bool hasLoaded = false;
 
   SortField activeSortField = SortField.dateModified;
   bool sortAscending = false;
 
   Future<void> loadProjects() async {
+    if (hasLoaded) return;
+    hasLoaded = true;
+    
     final data = await DI.projectRepository.loadPersistedData();
 
     // We rely on repository to give us projects, but we need to handle the conversion here or in repository

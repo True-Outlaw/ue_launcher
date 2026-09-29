@@ -126,7 +126,7 @@ class _VaultCacheViewState extends State<VaultCacheView> {
                   IconButton(
                     icon: const Icon(Icons.refresh),
                     tooltip: 'Refresh Vault Cache',
-                    onPressed: provider.isLoading ? null : () => provider.loadVault(),
+                    onPressed: provider.isLoading ? null : () => provider.loadVault(forceRefresh: true),
                   ),
                 ],
               ),
